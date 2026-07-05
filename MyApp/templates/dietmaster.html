@@ -1,0 +1,76 @@
+{% include 'dietician_header.html'%}
+        <title>Healthy Me | Diet Chart</title>
+		
+        <h6>- Your Health is our Wealth -</h6>
+        <style>
+            form {
+                margin: 30px 350px;
+                width: 100px;
+                padding: 50px 30px;
+            }
+            .table {
+                border:3px solid #2E86C1;
+                width: 100px;
+                padding: 10px 10px;
+            }
+            h1 {
+                margin: 30px 390px;
+                font-size: 60px;
+                font-weight: bold;
+                color:#2E86C1;
+            }
+            h6 {
+                margin: 20px 450px;
+                font-size: 20px;
+                font-weight: bold;
+                color:#66BAF1;
+            }
+            th {
+                margin: 30px 350px;
+                font-size: 40px;
+                font-weight: bold;
+                color:#2E86C1;
+            }
+            input[type="number"], input[type="date"]  {
+                width: 350px;
+                height: 45px;
+                margin: 10px 10px;
+                border: 1px solid #2E86C1;
+            }
+            
+            input[type="submit"] {
+                width: 350px;
+                color: #ffffff;
+                height: 45px;
+                margin: 10px 10px;
+                background-color: #2E86C1;
+                font-weight: bold; 
+                font-size: 15px;             
+                border: 1px solid #2E86C1;
+            }
+        </style>
+    </head>
+    <body>
+     
+        <form action="/dietmasteraction/">
+            <table class="table">
+                <tr>
+                    <th>Diet Chart Entry</th>
+                </tr>
+                <tr>
+                    <input type="hidden" value="{{id}}" name="rid">
+                    <td><input type="date" placeholder=" Start Date" name="sdate"></td>
+                </tr>
+                <tr>
+                    <td><input type="date" placeholder=" End Date" name="edate"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" placeholder=" No. of Days" name="days"></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Submit" name="submit"></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

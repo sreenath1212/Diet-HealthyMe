@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Healthy Me | Meal Planner</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+        font-family: 'Muli', sans-serif;
+        position: relative;
+        z-index: 0;
+        overflow-x: hidden;
+        min-height: 100vh;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/static/assets/images/food_background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        filter: blur(8px);
+        z-index: -1;
+      }
+      .navbar-nav .nav-link {
+        color: #ffffff !important;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 4px;
+        background: transparent;
+        border-radius: 28px;
+        transition: background-color 0.2s, color 0.2s, transform 0.2s;
+      }
+      .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+        background-color: #ff7e5f;
+        color: #fff !important;
+        text-decoration: none;
+        transform: translateY(-2px);
+      }
+      .navbar {
+        border-radius: 0;
+        min-height: 72px;
+      }
+      @media (max-width: 768px) {
+        .navbar-nav {
+          flex-direction: column !important;
+          gap: 4px;
+          width: 100%;
+          align-items: flex-start !important;
+        }
+        .navbar-nav .nav-link {
+          width: 100%;
+          margin: 4px 0;
+          border-radius: 14px;
+          text-align: left;
+          padding-left: 20px !important;
+        }
+        .navbar-brand {
+          font-size: 1.3rem !important;
+        }
+        .container {
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+        }
+      }
+      .meal-planner-card {
+        background: rgba(255,255,255,0.97);
+        border-radius: 24px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.13);
+        padding: 48px 40px 40px 40px;
+        margin: 60px auto 48px auto;
+        max-width: 700px;
+      }
+      .meal-planner-card h1 {
+        color: #667eea;
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.5rem;
+      }
+      .form-section {
+        margin-bottom: 32px;
+      }
+      .form-section h3 {
+        color: #4e54c8;
+        font-weight: 800;
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+      }
+      .form-group {
+        margin-bottom: 24px;
+      }
+      .form-group label {
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 1.1rem;
+      }
+      .form-group input, .form-group select {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid #e3e8f7;
+        border-radius: 16px;
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #f8faff;
+      }
+      .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        background: #fff;
+      }
+      .form-group input::placeholder {
+        color: #94a3b8;
+        font-weight: 500;
+      }
+      .required-field::after {
+        content: ' *';
+        color: #ef4444;
+        font-weight: 800;
+      }
+      .submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 18px 40px;
+        border: none;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+      .submit-btn:hover::before {
+        left: 100%;
+      }
+      .submit-btn:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 36px rgba(102, 126, 234, 0.4);
+      }
+      .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .loading-spinner {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+      .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top: 2px solid #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .info-text {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 32px;
+        text-align: center;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+      .app-footer {
+        background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+        color: #ffffff;
+        padding: 60px 0 0 0;
+        margin-top: 60px;
+      }
+      .footer-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 40px;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      .footer-col {
+        flex: 1;
+        min-width: 250px;
+      }
+      .footer-col h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        position: relative;
+        padding-bottom: 12px;
+      }
+      .footer-col h4::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      }
+      .footer-col p, .footer-col li {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .footer-col ul {
+        list-style: none;
+        padding: 0;
+      }
+      .footer-col ul li {
+        margin-bottom: 12px;
+      }
+      .footer-col ul a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.2s, padding-left 0.2s;
+      }
+      .footer-col ul a:hover {
+        color: #ffffff;
+        padding-left: 5px;
+      }
+      .footer-bottom {
+        text-align: center;
+        padding: 24px 0;
+        margin-top: 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="w3l-bootstrap-header">
+      <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+        <div class="container" style="max-width: 1280px;">
+          <a class="navbar-brand d-flex align-items-center" href="/userhome/" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+            <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+            <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav align-items-center" style="gap: 12px;">
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/userhome/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/viewuserexercise/">Exercise</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/viewuseryoga/">Yoga</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/viewprofile/">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/logout/">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+    <div class="meal-planner-card">
+      <h1>🍽️ Personalized Meal Planner</h1>
+      
+      <div class="info-text">
+        <strong>🎯 Create Your Perfect 7-Day Meal Plan</strong><br>
+        Fill in your details below and we'll generate a personalized meal plan tailored to your needs, preferences, and health goals.
+      </div>
+      
+      <form action="{% url 'plan_meal' %}" method="POST">
+        {% csrf_token %}
+        
+        <div class="form-section">
+          <h3>📏 Basic Information</h3>
+          <div class="form-group">
+            <label for="height" class="required-field">Height (cm)</label>
+            <input type="number" id="height" name="height" placeholder="e.g., 175" min="1" step="any" required>
+          </div>
+          <div class="form-group">
+            <label for="weight" class="required-field">Weight (kg)</label>
+            <input type="number" id="weight" name="weight" placeholder="e.g., 70" min="1" step="any" required>
+          </div>
+          <div class="form-group">
+            <label for="age" class="required-field">Age (years)</label>
+            <input type="number" id="age" name="age" placeholder="e.g., 30" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="gender" class="required-field">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="activity_level" class="required-field">Activity Level</label>
+            <select id="activity_level" name="activity_level" required>
+              <option value="">Select Activity Level</option>
+              <option value="sedentary">Sedentary (Little or no exercise)</option>
+              <option value="lightly_active">Lightly active (Light exercise/sports 1-3 days/week)</option>
+              <option value="moderately_active">Moderately active (Moderate exercise/sports 3-5 days/week)</option>
+              <option value="very_active">Very active (Hard exercise/sports 6-7 days a week)</option>
+              <option value="extra_active">Extra active (Very hard exercise/physical job)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h3>🏥 Health & Preferences</h3>
+          <div class="form-group">
+            <label for="medical_conditions">Medical Conditions (optional)</label>
+            <input type="text" id="medical_conditions" name="medical_conditions" placeholder="e.g., diabetes, hypertension">
+          </div>
+          <div class="form-group">
+            <label for="diet">Diet Label (optional)</label>
+            <select id="diet" name="diet">
+              <option value="">Any</option>
+              <option value="balanced">Balanced</option>
+              <option value="high-protein">High-Protein</option>
+              <option value="low-fat">Low-Fat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="health">Health Label (optional)</label>
+            <select id="health" name="health">
+              <option value="">Any</option>
+              <option value="alcohol-free">Alcohol-Free</option>
+              <option value="celery-free">Celery-Free</option>
+              <option value="crustacean-free">Crustacean-Free</option>
+              <option value="dairy-free">Dairy-Free</option>
+              <option value="egg-free">Egg-Free</option>
+              <option value="fish-free">Fish-Free</option>
+              <option value="gluten-free">Gluten-Free</option>
+              <option value="kidney-friendly">Kidney-Friendly</option>
+              <option value="kosher">Kosher</option>
+              <option value="low-sugar">Low-Sugar</option>
+              <option value="mustard-free">Mustard-Free</option>
+              <option value="no-oil-added">No-Oil-Added</option>
+              <option value="paleo">Paleo</option>
+              <option value="peanut-free">Peanut-Free</option>
+              <option value="pork-free">Pork-Free</option>
+              <option value="red-meat-free">Red-Meat-Free</option>
+              <option value="sesame-free">Sesame-Free</option>
+              <option value="shellfish-free">Shellfish-Free</option>
+              <option value="soy-free">Soy-Free</option>
+              <option value="sugar-conscious">Sugar-Conscious</option>
+              <option value="tree-nut-free">Tree-Nut-Free</option>
+              <option value="vegan">Vegan</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="wheat-free">Wheat-Free</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h3>🌍 Cuisine & Preferences</h3>
+          <div class="form-group">
+            <label for="cuisineType">Cuisine Type (optional)</label>
+            <select id="cuisineType" name="cuisineType">
+              <option value="">Any</option>
+              <option value="american">American</option>
+              <option value="asian">Asian</option>
+              <option value="british">British</option>
+              <option value="caribbean">Caribbean</option>
+              <option value="central europe">Central Europe</option>
+              <option value="chinese">Chinese</option>
+              <option value="eastern europe">Eastern Europe</option>
+              <option value="french">French</option>
+              <option value="greek">Greek</option>
+              <option value="indian">Indian</option>
+              <option value="italian">Italian</option>
+              <option value="japanese">Japanese</option>
+              <option value="korean">Korean</option>
+              <option value="kosher">Kosher</option>
+              <option value="mediterranean">Mediterranean</option>
+              <option value="mexican">Mexican</option>
+              <option value="middle eastern">Middle Eastern</option>
+              <option value="nordic">Nordic</option>
+              <option value="south american">South American</option>
+              <option value="south east asian">South East Asian</option>
+              <option value="world">World</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="time">Max Cooking Time (optional, minutes)</label>
+            <input type="text" id="time" name="time" placeholder="e.g., 30 (for up to 30 mins) or 60+">
+          </div>
+          <div class="form-group">
+            <label for="calories">Target Daily Calories (optional)</label>
+            <input type="text" id="calories" name="calories" placeholder="e.g., 1800-2200 or 2000+ (leave blank for automatic)">
+          </div>
+          <div class="form-group">
+            <label for="excluded">Exclude Ingredients (optional)</label>
+            <input type="text" id="excluded" name="excluded" placeholder="e.g., onion, garlic (comma-separated)">
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span id="btnText">🚀 Generate 7-Day Meal Plan</span>
+          <span id="loadingSpinner" class="loading-spinner">
+            <div class="spinner"></div>
+            Generating meal plan... (This may take 30-60 seconds)
+          </span>
+        </button>
+      </form>
+    </div>
+    <footer class="app-footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <h4>About AI DIETICIAN</h4>
+          <p>AI DIETICIAN is a revolutionary app designed to provide personalized diet plans, calorie tracking, and expert advice to help you achieve your health and wellness goals.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/userhome/">Home</a></li>
+            <li><a href="/viewuserexercise/">Exercise</a></li>
+            <li><a href="/viewuseryoga/">Yoga</a></li>
+            <li><a href="/viewprofile/">Profile</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <p>Email: ai.dietician.123@gmail.com</p>
+          <p>Phone: +91 8590682450</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+      </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Loading state management
+      document.querySelector('form').addEventListener('submit', function() {
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        loadingSpinner.style.display = 'flex';
+      });
+    </script>
+  </body>
+</html>

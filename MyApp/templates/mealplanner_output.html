@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Healthy Me | Your 7-Day Meal Plan</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+        font-family: 'Muli', sans-serif;
+        position: relative;
+        z-index: 0;
+        overflow-x: hidden;
+        min-height: 100vh;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/static/assets/images/food_background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        filter: blur(2px) brightness(0.6) contrast(1.2);
+        z-index: -1;
+      }
+      .navbar-nav .nav-link {
+        color: #ffffff !important;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 4px;
+        background: transparent;
+        border-radius: 28px;
+        transition: background-color 0.2s, color 0.2s, transform 0.2s;
+      }
+      .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+        background-color: #ff7e5f;
+        color: #fff !important;
+        text-decoration: none;
+        transform: translateY(-2px);
+      }
+      .navbar {
+        border-radius: 0;
+        min-height: 72px;
+      }
+      @media (max-width: 768px) {
+        .navbar-nav {
+          flex-direction: column !important;
+          gap: 4px;
+          width: 100%;
+          align-items: flex-start !important;
+        }
+        .navbar-nav .nav-link {
+          width: 100%;
+          margin: 4px 0;
+          border-radius: 14px;
+          text-align: left;
+          padding-left: 20px !important;
+        }
+        .navbar-brand {
+          font-size: 1.3rem !important;
+        }
+        .container {
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+        }
+      }
+      .meal-plan-container {
+        max-width: 1400px;
+        margin: 60px auto 48px auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 8px;
+        backdrop-filter: blur(1px);
+      }
+      .page-title {
+        color: #1a202c;
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2.8rem;
+        text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.5);
+        letter-spacing: -0.5px;
+      }
+      .demo-warning {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+        border: 2px solid rgba(255, 193, 7, 0.3);
+        border-radius: 16px;
+        padding: 24px 28px;
+        margin-bottom: 32px;
+        text-align: left;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+      .user-summary {
+        background: rgba(255, 255, 255, 0.98);
+        border: 3px solid #667eea;
+        border-radius: 20px;
+        padding: 32px 36px;
+        margin-bottom: 40px;
+        text-align: center;
+        color: #1a202c;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(102, 126, 234, 0.1);
+        backdrop-filter: blur(10px);
+      }
+      .user-summary strong {
+        color: #4c51bf;
+        font-weight: 800;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .day-section {
+        background: rgba(255,255,255,0.99);
+        border-radius: 24px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(102, 126, 234, 0.08);
+        padding: 40px 32px;
+        margin-bottom: 40px;
+        border: 2px solid rgba(102, 126, 234, 0.15);
+        backdrop-filter: blur(10px);
+      }
+      .day-title {
+        color: #2d3748;
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 32px;
+        font-size: 2.2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        letter-spacing: -0.5px;
+      }
+      .daily-summary {
+        background: linear-gradient(135deg, rgba(46, 204, 113, 0.08) 0%, rgba(52, 152, 219, 0.08) 100%);
+        border: 2px solid rgba(46, 204, 113, 0.2);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .summary-title {
+        color: #27ae60;
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 16px;
+      }
+      .summary-item {
+        background: rgba(255,255,255,0.8);
+        border-radius: 12px;
+        padding: 16px 12px;
+        text-align: center;
+        border: 1px solid rgba(46, 204, 113, 0.2);
+      }
+      .summary-value {
+        font-weight: 900;
+        color: #27ae60;
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+      }
+      .summary-label {
+        font-size: 0.9rem;
+        color: #2c3e50;
+        font-weight: 600;
+      }
+      .meals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 24px;
+      }
+      .meal-card {
+        background: rgba(255, 255, 255, 0.98);
+        border: 2px solid rgba(102, 126, 234, 0.25);
+        border-radius: 20px;
+        padding: 32px 28px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(102, 126, 234, 0.08);
+        backdrop-filter: blur(10px);
+      }
+      .meal-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 0 2px 2px 0;
+      }
+      .meal-card:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.25);
+        border-color: rgba(102, 126, 234, 0.4);
+      }
+      .meal-type-title {
+        color: #4c51bf;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .recipe-image {
+        width: 100%;
+        max-width: 200px;
+        height: 150px;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        object-fit: cover;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      }
+      .recipe-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+      .recipe-details {
+        font-size: 1rem;
+        color: #2d3748;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+      .time-serving-info {
+        display: flex;
+        gap: 16px;
+        margin: 16px 0;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: #667eea;
+        font-weight: 600;
+        background: rgba(102, 126, 234, 0.1);
+        padding: 6px 12px;
+        border-radius: 20px;
+      }
+      .labels-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0;
+        justify-content: center;
+      }
+      .label {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .health-label {
+        background: rgba(46, 204, 113, 0.15);
+        color: #27ae60;
+      }
+      .diet-label {
+        background: rgba(255, 193, 7, 0.15);
+        color: #f39c12;
+      }
+      .expandable-section {
+        margin-top: 16px;
+        border: 2px solid rgba(102, 126, 234, 0.25);
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.98);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .expandable-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        padding: 18px 24px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        color: #2d3748;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      }
+      .expandable-header:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+      }
+      .expandable-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .expandable-content.expanded {
+        max-height: 1000px;
+      }
+      .expandable-content-inner {
+        padding: 20px;
+      }
+      .nutrition-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .nutrition-item {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 14px 18px;
+        border-radius: 12px;
+        border-left: 4px solid #4c51bf;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .nutrition-label {
+        font-weight: 700;
+        color: #1a202c;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+      .nutrition-value {
+        color: #4c51bf;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .ingredients-list {
+        text-align: left;
+        margin-top: 12px;
+      }
+      .ingredient-item {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.15);
+        font-size: 0.9rem;
+        color: #2d3748;
+        font-weight: 500;
+      }
+      .ingredient-item:last-child {
+        border-bottom: none;
+      }
+      .recipe-link {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 16px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 20px;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+      }
+      .recipe-link:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 28px rgba(102, 126, 234, 0.35);
+        color: #fff;
+        text-decoration: none;
+      }
+      .back-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #4c51bf 0%, #667eea 100%);
+        color: #fff;
+        padding: 18px 36px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+      .back-button:hover {
+        background: linear-gradient(135deg, #667eea 0%, #4c51bf 100%);
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 12px 36px rgba(102, 126, 234, 0.4), 0 6px 16px rgba(0, 0, 0, 0.15);
+        color: #fff;
+        text-decoration: none;
+      }
+      .app-footer {
+        background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+        color: #ffffff;
+        padding: 60px 0 0 0;
+        margin-top: 60px;
+      }
+      .footer-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 40px;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      .footer-col {
+        flex: 1;
+        min-width: 250px;
+      }
+      .footer-col h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        position: relative;
+        padding-bottom: 12px;
+      }
+      .footer-col h4::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      }
+      .footer-col p, .footer-col li {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .footer-col ul {
+        list-style: none;
+        padding: 0;
+      }
+      .footer-col ul li {
+        margin-bottom: 12px;
+      }
+      .footer-col ul a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.2s, padding-left 0.2s;
+      }
+      .footer-col ul a:hover {
+        color: #ffffff;
+        padding-left: 5px;
+      }
+      .footer-bottom {
+        text-align: center;
+        padding: 24px 0;
+        margin-top: 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="w3l-bootstrap-header">
+      <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+        <div class="container" style="max-width: 1280px;">
+          <a class="navbar-brand d-flex align-items-center" href="/userhome/" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+            <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+            <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav align-items-center" style="gap: 12px;">
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/userhome/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/viewuserexercise/">Exercise</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/viewuseryoga/">Yoga</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/viewprofile/">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/logout/">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+    <div class="meal-plan-container">
+      <h1 class="page-title">🍽️ Your Personalized 7-Day Meal Plan</h1>
+
+      {% if user_details.tdee == 2000 and user_details.height == 'N/A' %}
+      <div class="demo-warning">
+        <strong>⚠️ Demo Mode:</strong> This is a sample meal plan. To get personalized recipes, please set up the Edamam API credentials. See the setup guide for instructions.
+      </div>
+      {% endif %}
+
+      <div class="user-summary">
+        <p><strong>Based on your input:</strong></p>
+        <p><strong>Height:</strong> {{ user_details.height }} cm | 
+           <strong>Weight:</strong> {{ user_details.weight }} kg | 
+           <strong>Age:</strong> {{ user_details.age }} years | 
+           <strong>Gender:</strong> {{ user_details.gender }}</p>
+        <p><strong>Activity Level:</strong> 
+            {% if user_details.activity_level == 'lightly_active' %}
+                Lightly active (Light exercise/sports 1-3 days/week)
+            {% elif user_details.activity_level == 'moderately_active' %}
+                Moderately active (Moderate exercise/sports 3-5 days/week)
+            {% elif user_details.activity_level == 'very_active' %}
+                Very active (Hard exercise/sports 6-7 days a week)
+            {% elif user_details.activity_level == 'extra_active' %}
+                Extra active (Very hard exercise/physical job)
+            {% elif user_details.activity_level == 'sedentary' %}
+                Sedentary (Little or no exercise)
+            {% else %}
+                {{ user_details.activity_level|title }}
+            {% endif %}
+        </p>
+        <p><strong>Medical Conditions:</strong> {{ user_details.medical_conditions|default:"None specified" }}</p>
+        <p style="margin-top: 16px; font-size: 1.2rem;"><strong>Estimated Daily Calorie Target: {{ user_details.tdee|floatformat:0 }} kcal</strong></p>
+        <p style="font-size: 0.9rem; color: #2d3748; margin-top: 8px; font-weight: 600;">
+            (This is an estimate. Consult a professional for precise dietary advice.)
+        </p>
+      </div>
+
+      {% if seven_day_meal_plan %}
+        {% for day, meals in seven_day_meal_plan.items %}
+          <div class="day-section">
+            <h2 class="day-title">{{ day }}</h2>
+            
+            <!-- Daily Summary -->
+            <div class="daily-summary">
+              <div class="summary-title">📊 Daily Summary</div>
+              <div class="summary-grid">
+                <div class="summary-item">
+                  <div class="summary-value">{{ day|slice:":3" }}</div>
+                  <div class="summary-label">Day</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-value">3</div>
+                  <div class="summary-label">Meals</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-value">~{{ user_details.tdee|floatformat:0 }}</div>
+                  <div class="summary-label">Target Calories</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="meals-grid">
+              {% for meal_type, recipe in meals.items %}
+                <div class="meal-card">
+                  <h3 class="meal-type-title">{{ meal_type }}</h3>
+                  <img src="{{ recipe.image }}" alt="{{ recipe.label }}" class="recipe-image" onerror="this.onerror=null;this.src='https://placehold.co/200x200/E2E8F0/475569?text=No+Image';">
+                  <h4 class="recipe-title">{{ recipe.label }}</h4>
+                  <p class="recipe-details"><strong>Source:</strong> {{ recipe.source|default:"N/A" }}</p>
+                  <p class="recipe-details"><strong>Calories:</strong> {{ recipe.calories|floatformat:2 }} kcal</p>
+                  
+                  <!-- Time and Serving Information -->
+                  <div class="time-serving-info">
+                    {% if recipe.totalTime %}
+                      <div class="info-item">
+                        <span>⏱️</span>
+                        <span>{{ recipe.totalTime|floatformat:0 }} min</span>
+                      </div>
+                    {% endif %}
+                    {% if recipe.yield %}
+                      <div class="info-item">
+                        <span>👥</span>
+                        <span>{{ recipe.yield|floatformat:0 }} servings</span>
+                      </div>
+                    {% endif %}
+                    {% if recipe.cuisineType %}
+                      <div class="info-item">
+                        <span>🌍</span>
+                        <span>{{ recipe.cuisineType.0|title }}</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Health and Diet Labels -->
+                  {% if recipe.healthLabels or recipe.dietLabels %}
+                    <div class="labels-container">
+                      {% for label in recipe.healthLabels %}
+                        <span class="label health-label">{{ label }}</span>
+                      {% endfor %}
+                      {% for label in recipe.dietLabels %}
+                        <span class="label diet-label">{{ label }}</span>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Nutritional Information -->
+                  {% if recipe.totalNutrients %}
+                    <div class="expandable-section">
+                      <div class="expandable-header" onclick="toggleSection(this)">
+                        📊 Nutritional Information
+                        <span class="toggle-icon">▼</span>
+                      </div>
+                      <div class="expandable-content">
+                        <div class="expandable-content-inner">
+                          <div class="nutrition-grid">
+                            {% for nutrient, info in recipe.totalNutrients.items %}
+                              {% if forloop.counter <= 12 %}
+                                <div class="nutrition-item">
+                                  <div class="nutrition-label">{{ info.label|default:nutrient }}</div>
+                                  <div class="nutrition-value">{{ info.quantity|floatformat:1 }} {{ info.unit }}</div>
+                                </div>
+                              {% endif %}
+                            {% endfor %}
+                          </div>
+                          {% if recipe.totalNutrients|length > 12 %}
+                            <p style="font-size: 0.8rem; color: #2d3748; margin-top: 8px; font-weight: 600;">+{{ recipe.totalNutrients|length|add:"-12" }} more nutrients available</p>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Daily Values -->
+                  {% if recipe.totalDaily %}
+                    <div class="expandable-section">
+                      <div class="expandable-header" onclick="toggleSection(this)">
+                        📈 Daily Values (%)
+                        <span class="toggle-icon">▼</span>
+                      </div>
+                      <div class="expandable-content">
+                        <div class="expandable-content-inner">
+                          <div class="nutrition-grid">
+                            {% for nutrient, info in recipe.totalDaily.items %}
+                              {% if forloop.counter <= 10 %}
+                                <div class="nutrition-item">
+                                  <div class="nutrition-label">{{ info.label|default:nutrient }}</div>
+                                  <div class="nutrition-value">{{ info.quantity|floatformat:1 }}%</div>
+                                </div>
+                              {% endif %}
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Ingredients -->
+                  {% if recipe.ingredientLines %}
+                    <div class="expandable-section">
+                      <div class="expandable-header" onclick="toggleSection(this)">
+                        🛒 Ingredients ({{ recipe.ingredientLines|length }})
+                        <span class="toggle-icon">▼</span>
+                      </div>
+                      <div class="expandable-content">
+                        <div class="expandable-content-inner">
+                          <div class="ingredients-list">
+                            {% for ingredient in recipe.ingredientLines %}
+                              <div class="ingredient-item">{{ ingredient }}</div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Recipe Details -->
+                  <div class="expandable-section">
+                    <div class="expandable-header" onclick="toggleSection(this)">
+                      📝 Recipe Details
+                      <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                      <div class="expandable-content-inner">
+                        <div class="recipe-details">
+                          <p><strong>Recipe ID:</strong> {{ recipe.uri|slice:"-32:" }}</p>
+                          <p><strong>Total Weight:</strong> {{ recipe.totalWeight|floatformat:1 }}g</p>
+                          {% if recipe.totalTime %}
+                            <p><strong>Total Time:</strong> {{ recipe.totalTime|floatformat:0 }} minutes</p>
+                          {% endif %}
+                          {% if recipe.yield %}
+                            <p><strong>Servings:</strong> {{ recipe.yield|floatformat:1 }}</p>
+                            <p><strong>Calories per serving:</strong> {{ recipe.calories_per_serving|floatformat:0 }} kcal</p>
+                          {% endif %}
+                          {% if recipe.mealType %}
+                            <p><strong>Meal Type:</strong> {{ recipe.mealType.0|title }}</p>
+                          {% endif %}
+                          {% if recipe.dishType %}
+                            <p><strong>Dish Type:</strong> {{ recipe.dishType.0|title }}</p>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <a href="{{ recipe.url }}" target="_blank" class="recipe-link">View Full Recipe</a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="day-section" style="text-align: center;">
+          <p style="font-size: 1.2rem; color: #2d3748; font-weight: 700;">No meal plan could be generated. Please check your inputs and try again.</p>
+        </div>
+      {% endif %}
+
+      <div style="text-align: center;">
+        <a href="{% url 'meal_planner_form' %}" class="back-button">🚀 Generate New Plan</a>
+      </div>
+    </div>
+    <footer class="app-footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <h4>About AI DIETICIAN</h4>
+          <p>AI DIETICIAN is a revolutionary app designed to provide personalized diet plans, calorie tracking, and expert advice to help you achieve your health and wellness goals.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/userhome/">Home</a></li>
+            <li><a href="/viewuserexercise/">Exercise</a></li>
+            <li><a href="/viewuseryoga/">Yoga</a></li>
+            <li><a href="/viewprofile/">Profile</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <p>Email: ai.dietician.123@gmail.com</p>
+          <p>Phone: +91 8590682450</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+      </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function toggleSection(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.toggle-icon');
+        
+        if (content.classList.contains('expanded')) {
+          content.classList.remove('expanded');
+          icon.textContent = '▼';
+        } else {
+          content.classList.add('expanded');
+          icon.textContent = '▲';
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>AI DIETICIAN | Add Exercise</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Muli', sans-serif;
+            position: relative;
+            z-index: 0;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/static/assets/images/food_background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 4px;
+            background: transparent;
+            border-radius: 28px;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+            background-color: #ff7e5f;
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .navbar {
+            border-radius: 0;
+            min-height: 72px;
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: column !important;
+                gap: 4px;
+                width: 100%;
+                align-items: flex-start !important;
+            }
+            .navbar-nav .nav-link {
+                width: 100%;
+                margin: 4px 0;
+                border-radius: 14px;
+                text-align: left;
+                padding-left: 20px !important;
+            }
+            .navbar-brand {
+                font-size: 1.3rem !important;
+            }
+            .container {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title {
+            text-align: center;
+            color: #343a40;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        /* Form Styles */
+        .exercise-form {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            width: 100%;
+            min-height: 50px;
+        }
+
+        .form-control:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+            background: #ffffff;
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+            opacity: 0.7;
+        }
+
+        /* Select dropdown specific styles */
+        select.form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234facfe' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 50px;
+            cursor: pointer;
+        }
+
+        select.form-control option {
+            padding: 12px 16px;
+            font-size: 1rem;
+            background: #ffffff;
+            color: #495057;
+        }
+
+        select.form-control:focus option:checked {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* File Upload Styles */
+        .file-upload-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed #4facfe;
+            border-radius: 12px;
+            background: rgba(79, 172, 254, 0.05);
+            color: #4facfe;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 120px;
+        }
+
+        .file-upload-label:hover {
+            border-color: #3d9be8;
+            background: rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .file-upload-label i {
+            font-size: 2rem;
+            margin-right: 12px;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            pointer-events: none;
+        }
+        
+        .file-upload-label {
+            pointer-events: auto;
+        }
+
+        /* Media Preview */
+        .media-preview {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .media-preview img,
+        .media-preview video {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-placeholder {
+            padding: 40px;
+            border: 2px dashed #dee2e6;
+            border-radius: 12px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Button Styles */
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 40px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-weight: 600;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Footer Styles */
+        .app-footer {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            padding: 60px 0 0 0;
+            margin-top: 60px;
+        }
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .footer-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        .footer-col h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        }
+        .footer-col p, .footer-col li {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        .footer-col ul a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s, padding-left 0.2s;
+        }
+        .footer-col ul a:hover {
+            color: #ffffff;
+            padding-left: 5px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 24px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 20px;
+                padding: 20px;
+            }
+            .page-title {
+                font-size: 2rem;
+            }
+            .exercise-form {
+                padding: 20px;
+            }
+            .form-control {
+                font-size: 16px; /* Prevents zoom on iOS */
+                min-height: 44px; /* Better touch target */
+            }
+            select.form-control {
+                padding-right: 40px;
+                background-size: 14px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+
+    <!-- Header -->
+    <section class="w3l-bootstrap-header">
+      <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+        <div class="container" style="max-width: 1280px;">
+          <a class="navbar-brand d-flex align-items-center" href="index.html" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+            <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+            <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav align-items-center" style="gap: 12px;">
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="{% if user_type == 'dietician' %}http://127.0.0.1:8000/dieticianhome/{% else %}http://127.0.0.1:8000/adminhome/{% endif %}">Home</a>
+              </li>
+              {% if user_type == 'dietician' %}
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/calorie/">Add Food Calories</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewreg/">Registered Users</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewyoga/">View Yoga</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/login/">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="page-title">Add Exercise</h1>
+        <p class="page-subtitle">Create a new exercise with detailed information and video demonstration for patients.</p>
+        
+        <div class="exercise-form">
+            <form id="exercise-form" method="POST" action="/exerciseaction/" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="uid" value="{{id}}">
+                
+                <div class="form-group">
+                    <label class="form-label">Exercise Name</label>
+                    <input type="text" class="form-control" placeholder="Enter exercise name" name="ENAME" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Exercise Type</label>
+                    <select class="form-control" name="etype" required>
+                        <option value="">Select the exercise type</option>
+                        <option value="Strength">Strength</option>
+                        <option value="Balance">Balance</option>
+                        <option value="Flexibility">Flexibility</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" placeholder="Describe the exercise, benefits, and instructions" name="edesc" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Exercise Media (Image or Video)</label>
+                    <div class="file-upload-container">
+                        <label for="exercise-media" class="file-upload-label">
+                            <i class="fas fa-video"></i>
+                            <span>Click to select exercise image or video</span>
+                        </label>
+                        <input id="exercise-media" class="file-input" type="file" name="EVIDEO" accept="image/*,video/*" required>
+                    </div>
+                    
+                    <div id="media-preview" class="media-preview">
+                        <img id="preview-img" src="" alt="Exercise preview" style="display: none;">
+                        <video id="preview-video" controls style="display: none;">
+                            <source src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+            </form>
+            
+            <div class="btn-container">
+                <a href="http://127.0.0.1:8000/viewexercise/" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> View Exercises
+                </a>
+                <button type="submit" form="exercise-form" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Exercise
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>About AI DIETICIAN</h4>
+                <p>AI DIETICIAN is a revolutionary platform that connects expert dieticians with patients, providing personalized nutrition guidance and comprehensive health support.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% if user_type == 'dietician' %}http://127.0.0.1:8000/dieticianhome/{% else %}http://127.0.0.1:8000/adminhome/{% endif %}">Home</a></li>
+                    {% if user_type == 'dietician' %}
+                    <li><a href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a></li>
+                    <li><a href="/calorie/">Add Food Calories</a></li>
+                    {% else %}
+                    <li><a href="http://127.0.0.1:8000/viewreg/">Registered Users</a></li>
+                    <li><a href="http://127.0.0.1:8000/viewyoga/">View Yoga</a></li>
+                    {% endif %}
+                    <li><a href="http://127.0.0.1:8000/viewexercise/">View Exercises</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <p>Email: ai.dietician.123@gmail.com</p>
+                <p>Phone: +91 8590682450</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Media preview functionality
+        document.getElementById('exercise-media').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('media-preview');
+            const previewImg = document.getElementById('preview-img');
+            const previewVideo = document.getElementById('preview-video');
+            
+            if (file) {
+                // Hide both preview elements initially
+                previewImg.style.display = 'none';
+                previewVideo.style.display = 'none';
+                
+                // Check if file is image or video
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                        preview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('video/')) {
+                    const url = URL.createObjectURL(file);
+                    previewVideo.src = url;
+                    previewVideo.style.display = 'block';
+                    preview.style.display = 'block';
+                }
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        // File upload label update
+        document.getElementById('exercise-media').addEventListener('change', function(e) {
+            const label = document.querySelector('.file-upload-label span');
+            if (e.target.files.length > 0) {
+                label.textContent = e.target.files[0].name;
+            } else {
+                label.textContent = 'Click to select exercise image or video';
+            }
+        });
+        
+        // Prevent file input from being triggered by other elements
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.file-upload-container') && !e.target.closest('.btn-container')) {
+                const fileInput = document.getElementById('exercise-media');
+                if (fileInput === document.activeElement) {
+                    fileInput.blur();
+                }
+            }
+        });
+    </script>
+
+  </body>
+</html>

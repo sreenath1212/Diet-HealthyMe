@@ -1,0 +1,59 @@
+{% include 'header.html'%}
+        <title>Healthy Me | Login</title>
+        <link rel="icon" href="../../media/pictures/logo.png" type="image/x-icon">
+        <style>
+            form {
+                margin: 63px 515px;
+                width: 160px;
+                padding: 50px 30px;
+            }
+            .table {
+                width: 160px;
+                padding: 20px 10px;
+            }
+            th {
+                margin: 30px 590px;
+                font-size: 30px;
+                font-weight: bold;
+                color:#ffffff;
+            }
+            input[type="email"], input[type="password"], input[type="text"] {
+                width: 350px;
+                height: 45px;
+                margin: 10px 10px;
+                border: 1px solid #17449e;
+                color: #17449e;
+            }
+            input[type="submit"] {
+                width: 350px;
+                color: #ffffff;
+                height: 45px;
+                margin: 10px 10px;
+                background-color: #17449e;
+                font-weight: bold; 
+                font-size: 18px;             
+                border: 1px solid #17449e;
+            }
+            a {
+                font-weight: bolder;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="/fpassact/">
+            <table class="table">
+                <tr>
+                    <td><input type="email" placeholder=" Email ID" name="un" required></td>
+                </tr>
+                <tr>
+                    <td><input type="text" placeholder=" Phone" name="up" required></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Submit" name="submit"></td>
+                </tr>
+              
+            </table>
+        </form>
+    </body>
+</html>
+{% include 'footer.html'%}

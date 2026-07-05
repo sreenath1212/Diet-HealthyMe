@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Healthy Me | Calorie Calculator</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Muli', sans-serif;
+            position: relative;
+            z-index: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/static/assets/images/food_background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(8px);
+            z-index: -1;
+        }
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 4px;
+            background: transparent;
+            border-radius: 28px;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+            background-color: #ff7e5f;
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .navbar {
+            border-radius: 0;
+            min-height: 72px;
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: column !important;
+                gap: 4px;
+                width: 100%;
+                align-items: flex-start !important;
+            }
+            .navbar-nav .nav-link {
+                width: 100%;
+                margin: 4px 0;
+                border-radius: 14px;
+                text-align: left;
+                padding-left: 20px !important;
+            }
+            .navbar-brand {
+                font-size: 1.3rem !important;
+            }
+            .container {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+        }
+        .main-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.13);
+            padding: 40px 32px 32px 32px;
+            margin: 48px auto 48px auto;
+            max-width: 1000px;
+        }
+        /* Footer Styles */
+        .app-footer {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            padding: 60px 0 0 0;
+            margin-top: 60px;
+        }
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .footer-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        .footer-col h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        }
+        .footer-col p, .footer-col li {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        .footer-col ul a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s, padding-left 0.2s;
+        }
+        .footer-col ul a:hover {
+            color: #ffffff;
+            padding-left: 5px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 24px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* --- Enhanced Colorful Calorie Calculator Styles --- */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            margin: 0 0 40px 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.9) 100%);
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border: 2px solid rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,182,193,0.1) 0%, rgba(173,216,230,0.1) 50%, rgba(144,238,144,0.1) 100%);
+            pointer-events: none;
+        }
+        .tab-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            color: #ffffff;
+            border: none;
+            padding: 18px 36px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 6px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            min-width: 180px;
+            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+        }
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+        .tab-btn:hover::before {
+            left: 100%;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+        }
+        .tab-btn:hover:not(.active) {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 154, 158, 0.3);
+        }
+        .tab-section {
+            display: none;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 500px;
+        }
+        .tab-section.active {
+            display: block;
+            opacity: 1;
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        .container-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 30px 0;
+            gap: 30px;
+        }
+        .column {
+            flex: 1;
+            padding: 48px;
+            min-width: 400px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.95) 100%);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            border: 2px solid rgba(255,255,255,0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3);
+        }
+        .column:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .column:nth-child(1)::before {
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+        }
+        .divider {
+            width: 4px;
+            background: linear-gradient(180deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #feca57 100%);
+            height: 100%;
+            margin: 0 30px;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .table {
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1) 1;
+            width: 100%;
+            margin-bottom: 32px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+        }
+        .table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            text-align: center;
+            padding: 20px 16px;
+            font-weight: 700;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .table td {
+            padding: 18px 16px;
+            border-bottom: 1px solid #e3e8ee;
+            background: rgba(255,255,255,0.9);
+            transition: all 0.3s ease;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .table tr:hover td {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            transform: scale(1.02);
+        }
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            max-width: 320px;
+            font-size: 16px;
+            height: 56px;
+            color: #1a1a1a;
+            border: 2px solid #e3e8ee;
+            border-radius: 16px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-weight: 700;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: #ffffff;
+            transform: translateY(-2px);
+        }
+        input[type="submit"], button[type="button"] {
+            width: 100%;
+            max-width: 320px;
+            font-size: 18px;
+            height: 56px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 16px;
+            margin-top: 24px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+            font-weight: 800;
+            position: relative;
+            overflow: hidden;
+        }
+        input[type="submit"]::before, button[type="button"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+        input[type="submit"]:hover::before, button[type="button"]:hover::before {
+            left: 100%;
+        }
+        input[type="submit"]:hover, button[type="button"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(102, 126, 234, 0.35);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        .alert-danger {
+            color: #dc3545;
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+            border: 2px solid rgba(220, 53, 69, 0.2);
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
+        }
+        h2, h3 {
+            color: #1a1a1a;
+            text-align: center;
+            font-weight: 900;
+            margin-bottom: 32px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h2::after, h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        h2 {
+            font-size: 2.4rem;
+            margin-bottom: 40px;
+        }
+        h3 {
+            font-size: 1.8rem;
+            margin-bottom: 28px;
+        }
+        .advanced-calc-column {
+            border: none !important;
+            padding: 48px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.95) 100%);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            width: 100% !important;
+            border: 2px solid rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .advanced-calc-column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #96ceb4, #feca57, #ff9ff3, #ff6b6b);
+        }
+        #advanced-calorie-calculator form {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+            width: 100%;
+        }
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+            border-radius: 20px;
+            border: 3px dashed;
+            border-image: linear-gradient(45deg, #96ceb4, #feca57, #ff9ff3) 1;
+            transition: all 0.3s ease;
+        }
+        .file-upload-wrapper:hover {
+            border-image: linear-gradient(45deg, #ff9ff3, #ff6b6b, #96ceb4) 1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+            transform: translateY(-2px);
+        }
+        #food_image {
+            display: none;
+        }
+        .file-upload-label {
+            display: inline-block;
+            padding: 20px 48px;
+            background: linear-gradient(135deg, #96ceb4 0%, #feca57 100%);
+            color: #fff;
+            font-weight: 800;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(150, 206, 180, 0.25);
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .file-upload-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        .file-upload-label:hover::before {
+            left: 100%;
+        }
+        .file-upload-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(150, 206, 180, 0.35);
+            background: linear-gradient(135deg, #feca57 0%, #96ceb4 100%);
+        }
+        #file-name-display {
+            display: block;
+            margin-top: 16px;
+            color: #1a1a1a;
+            font-style: italic;
+            font-size: 14px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(150, 206, 180, 0.1) 0%, rgba(254, 202, 87, 0.1) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(150, 206, 180, 0.2);
+            font-weight: 700;
+        }
+        .comment-wrapper {
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            padding: 32px;
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+            border-radius: 20px;
+            border: 2px solid rgba(150, 206, 180, 0.2);
+        }
+        .comment-wrapper label {
+            display: block;
+            margin-bottom: 16px;
+            font-weight: 800;
+            color: #1a1a1a;
+            font-size: 18px;
+        }
+        #food_comment {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px solid #e3e8ee;
+            font-size: 16px;
+            resize: vertical;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+            min-height: 120px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        #food_comment:focus {
+            border-color: #96ceb4;
+            box-shadow: 0 0 0 4px rgba(150, 206, 180, 0.15);
+            outline: none;
+            background: #ffffff;
+            transform: translateY(-2px);
+        }
+        .analyze-btn {
+            width: auto;
+            padding: 20px 56px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(135deg, #ff9ff3 0%, #ff6b6b 100%);
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(255, 159, 243, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .analyze-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        .analyze-btn:hover::before {
+            left: 100%;
+        }
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(255, 159, 243, 0.35);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff9ff3 100%);
+        }
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 12px rgba(255, 159, 243, 0.2);
+        }
+        .analyze-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(255, 159, 243, 0.2);
+        }
+        #image-result-wrapper {
+            margin-top: 40px;
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            box-sizing: border-box;
+            min-height: 150px;
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            text-align: center;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.7;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #image-preview {
+            margin: 20px auto;
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            padding: 5px;
+            display: none;
+            text-align: center;
+        }
+        #image-result b {
+            color: #667eea;
+            font-weight: 700;
+        }
+        .loader {
+            width: 56px;
+            height: 56px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 32px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Enhanced Colorful Output Styling */
+        .result-output {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.95) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 2px solid rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .result-output::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #96ceb4, #feca57, #ff9ff3, #ff6b6b);
+        }
+        .result-output.success::before {
+            background: linear-gradient(90deg, #96ceb4, #feca57, #ff9ff3, #ff6b6b);
+        }
+        .result-output.info::before {
+            background: linear-gradient(90deg, #667eea, #764ba2, #96ceb4, #feca57);
+        }
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .result-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #96ceb4, #feca57);
+            border-radius: 2px;
+        }
+        .result-title.success::after {
+            background: linear-gradient(90deg, #96ceb4, #feca57);
+        }
+        .result-title.info::after {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        .calorie-total {
+            background: linear-gradient(135deg, #96ceb4 0%, #feca57 100%);
+            color: #ffffff;
+            padding: 24px 32px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 24px 0;
+            box-shadow: 0 6px 20px rgba(150, 206, 180, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .calorie-total::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+        .calorie-total:hover::before {
+            left: 100%;
+        }
+        .calorie-total h3 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .calorie-total p {
+            font-size: 1.1rem;
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+        .calorie-breakdown {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 2px solid rgba(150, 206, 180, 0.2);
+        }
+        .breakdown-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+        }
+        .breakdown-table {
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #667eea, #764ba2, #96ceb4) 1;
+            width: 100%;
+            margin-top: 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+        }
+        .breakdown-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            text-align: center;
+            padding: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .breakdown-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e3e8ee;
+            background: rgba(255,255,255,0.9);
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .breakdown-table tr:hover td {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            transform: scale(1.02);
+        }
+        .breakdown-table tr:last-child td {
+            border-bottom: none;
+        }
+        .no-result-message {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+            border: 3px dashed;
+            border-image: linear-gradient(45deg, #667eea, #764ba2, #96ceb4) 1;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 24px;
+        }
+        .no-result-message h3 {
+            color: #667eea;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .no-result-message p {
+            margin: 0;
+            opacity: 0.8;
+        }
+        .image-analysis-result {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.95) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 2px solid rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .image-analysis-result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff9ff3, #ff6b6b, #96ceb4, #feca57);
+        }
+        .analysis-content {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+        .analysis-content b {
+            color: #667eea;
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+        .analysis-content strong {
+            color: #96ceb4;
+            font-weight: 700;
+        }
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .loading-state .loader {
+            margin: 20px auto;
+        }
+        .loading-text {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-top: 16px;
+        }
+        .error-message {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+            border: 2px solid rgba(220, 53, 69, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #dc3545;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
+        }
+        .error-message h3 {
+            color: #dc3545;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .error-message p {
+            margin: 8px 0;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .success-message {
+            background: linear-gradient(135deg, rgba(150, 206, 180, 0.1) 0%, rgba(254, 202, 87, 0.1) 100%);
+            border: 2px solid rgba(150, 206, 180, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #96ceb4;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(150, 206, 180, 0.1);
+        }
+        @media (max-width: 768px) {
+            .tab-nav {
+                flex-direction: column;
+                gap: 12px;
+                padding: 16px;
+            }
+            .tab-btn {
+                margin: 0;
+                border-radius: 12px;
+                min-width: auto;
+                padding: 16px 24px;
+            }
+            .container-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .column {
+                margin-bottom: 20px;
+                padding: 32px 24px;
+                min-width: auto;
+            }
+            .divider {
+                width: 100%;
+                height: 4px;
+                margin: 20px 0;
+            }
+            input[type="text"], input[type="number"], select,
+            input[type="submit"], button[type="button"] {
+                max-width: 100%;
+            }
+            .advanced-calc-column {
+                padding: 32px 24px;
+            }
+            .file-upload-wrapper, .comment-wrapper {
+                padding: 24px;
+            }
+            #image-result-wrapper {
+                padding: 24px;
+            }
+            .result-output {
+                padding: 24px;
+                margin-top: 24px;
+            }
+            .calorie-total {
+                padding: 20px 24px;
+            }
+            .calorie-total h3 {
+                font-size: 1.8rem;
+            }
+            .calorie-breakdown {
+                padding: 20px;
+            }
+            .breakdown-table th,
+            .breakdown-table td {
+                padding: 12px 8px;
+                font-size: 14px;
+            }
+            .image-analysis-result {
+                padding: 24px;
+            }
+            .analysis-content {
+                font-size: 15px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+<section class="w3l-bootstrap-header">
+  <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+    <div class="container" style="max-width: 1280px;">
+      <a class="navbar-brand d-flex align-items-center" href="index.html" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+        <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+        style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+        <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+        <ul class="navbar-nav align-items-center" style="gap: 12px;">
+          <li class="nav-item">
+            <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/userhome/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewuserexercise/">Exercise</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewuseryoga/">Yoga</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewprofile/">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/logout/">Log Out</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</section>
+<div class="main-card">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="showTab(0)">Calorie Calculator</button>
+            <button class="tab-btn" onclick="showTab(1)">Food Reference Table</button>
+            <button class="tab-btn" onclick="showTab(2)">Advanced Calorie Calculator</button>
+        </div>
+        <!-- Tab Sections -->
+        <div id="tab-sections">
+            <!-- Calorie Calculator Section -->
+            <div class="tab-section active">
+                <div class="container-row">
+                    <div class="column" style="border-right: 1px solid #17449e;">
+                        <h2>Calorie Calculator</h2>
+                        <form id="mealForm" action="/calo/" method="get">
+                            <table class="table" id="mealTable">
+                                <tr>
+                                    <th>Food</th>
+                                    <th>Amount (g)</th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select name='fname' id="fname0">
+                                            {% for i in list %}
+                                            <option value="{{i.fname}}">{{i.fname}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" id="amount0" placeholder="Amount in grams" name="amount">
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <button type="button" onclick="addRow()">Add Another Food</button><br>
+                            <input type="submit" value="Calculate Total Calories" name="submit">
+                        </form>
+                        <center>
+                          {% if error %}
+                            <div class="error-message">{{ error }}</div>
+                          {% endif %}
+                          {% if calo is not None %}
+                            <div class="result-output success">
+                                <h2 class="result-title success">Calorie Calculation Results</h2>
+                                <div class="calorie-total">
+                                    <h3>{{ calo }} Calories</h3>
+                                    <p>Total calories for your meal</p>
+                                </div>
+                                {% if details and details|length > 1 %}
+                                  <div class="calorie-breakdown">
+                                      <h4 class="breakdown-title">Detailed Breakdown</h4>
+                                      <table class="breakdown-table">
+                                        <tr><th>Food Item</th><th>Amount (g)</th><th>Calories</th></tr>
+                                        {% for d in details %}
+                                          <tr><td>{{ d.food }}</td><td>{{ d.amount }}</td><td>{{ d.calories|floatformat:2 }}</td></tr>
+                                        {% endfor %}
+                                      </table>
+                                  </div>
+                                {% endif %}
+                            </div>
+                          {% else %}
+                            <div class="no-result-message">
+                                <h3>Ready to Calculate</h3>
+                                <p>Please select a food and enter an amount to see your calorie results</p>
+                            </div>
+                          {% endif %}
+                        </center>
+                        <script>
+                          let rowCount = 1;
+                          function addRow() {
+                            const table = document.getElementById('mealTable');
+                            const newRow = table.insertRow(-1);
+                            const foodCell = newRow.insertCell(0);
+                            const amountCell = newRow.insertCell(1);
+                            const actionCell = newRow.insertCell(2);
+                            foodCell.innerHTML = `<select name='fname' id='fname${rowCount}'>` +
+                              `{% for i in list %}<option value='{{i.fname}}'>{{i.fname}}</option>{% endfor %}` +
+                              `</select>`;
+                            amountCell.innerHTML = `<input type='number' id='amount${rowCount}' placeholder='Amount in grams' name='amount'>`;
+                            actionCell.innerHTML = `<button type='button' onclick='removeRow(this)'>Remove</button>`;
+                            rowCount++;
+                          }
+                          function removeRow(btn) {
+                            const row = btn.parentNode.parentNode;
+                            row.parentNode.removeChild(row);
+                          }
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <!-- Food Reference Table Section -->
+            <div class="tab-section">
+                <div class="container-row">
+                    <div class="column" style="width:100%;">
+                        <h2>Food Reference Table</h2>
+                        <table border="1" class="table">
+                            <tr>
+                                <th>Food</th>
+                                <th>Default Amount (g)</th>
+                                <th>Calories per 100g</th>
+                            </tr>
+                            {% for i in list %}
+                            <tr>
+                                <td>{{i.fname}}</td>
+                                <td>{{i.amount}}</td>
+                                <td>{{i.calories}}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Advanced Calorie Calculator Section -->
+            <div class="tab-section">
+                <div class="container-row">
+                    <div class="column advanced-calc-column">
+                        <h2>Advanced Calorie Calculator</h2>
+                        <div id="advanced-calorie-calculator">
+                             <form id="foodImageForm" enctype="multipart/form-data">
+                                <div class="file-upload-wrapper">
+                                    <label for="food_image" class="file-upload-label">Choose an Image</label>
+                                    <input type="file" name="food_image" id="food_image" accept="image/*" required>
+                                    <span id="file-name-display">No file selected.</span>
+                                    <img id="image-preview" src="#" alt="Image Preview"/>
+                                </div>
+                                <div class="comment-wrapper">
+                                    <label for="food_comment">Comments (optional)</label>
+                                    <textarea name="food_comment" id="food_comment" rows="3" placeholder="e.g., 'This is a large portion', 'with extra cheese'"></textarea>
+                                </div>
+                                <button type="submit" class="analyze-btn">Analyze Image</button>
+                            </form>
+                            <div id="image-result-wrapper">
+                                <div id="image-result"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function showTab(idx) {
+                const tabs = document.querySelectorAll('.tab-btn');
+                const sections = document.querySelectorAll('.tab-section');
+                tabs.forEach((btn, i) => {
+                    if (i === idx) {
+                        btn.classList.add('active');
+                        sections[i].classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                        sections[i].classList.remove('active');
+                    }
+                });
+            }
+            function typeCalorieResult(htmlMessage, container) {
+                // Parse the HTML to separate heading/image from text content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlMessage, "text/html");
+                const imageAnalysisResult = doc.querySelector('.image-analysis-result');
+                
+                if (imageAnalysisResult) {
+                    const title = imageAnalysisResult.querySelector('.result-title');
+                    const image = imageAnalysisResult.querySelector('img');
+                    const content = imageAnalysisResult.querySelector('.analysis-content');
+                    
+                    // Clear container and show heading and image first
+                    container.innerHTML = '';
+                    
+                    // Create the result container
+                    const resultContainer = document.createElement('div');
+                    resultContainer.className = 'image-analysis-result';
+                    
+                    // Add title immediately
+                    if (title) {
+                        resultContainer.appendChild(title.cloneNode(true));
+                    }
+                    
+                    // Add image immediately (if it exists)
+                    if (image) {
+                        resultContainer.appendChild(image.cloneNode(true));
+                    }
+                    
+                    // Add content container
+                    const contentContainer = document.createElement('div');
+                    contentContainer.className = 'analysis-content';
+                    resultContainer.appendChild(contentContainer);
+                    
+                    // Add the result container to the main container
+                    container.appendChild(resultContainer);
+                    
+                    // Now type the content text
+                    if (content) {
+                        const plainText = content.textContent || "";
+                        let i = 0;
+                        
+                        function typeChar() {
+                            if (i <= plainText.length) {
+                                contentContainer.textContent = plainText.slice(0, i);
+                                i++;
+                                setTimeout(typeChar, 25); // Typing speed
+                            }
+                        }
+                        typeChar();
+                    }
+                } else {
+                    // Fallback: if structure is different, use original method
+                    container.innerHTML = htmlMessage;
+                }
+            }
+            
+            // Handle file name display
+            document.getElementById('food_image').onchange = function(event) {
+                const fileName = this.files[0] ? this.files[0].name : "No file selected.";
+                document.getElementById('file-name-display').textContent = fileName;
+
+                const preview = document.getElementById('image-preview');
+                
+                // Revoke previous object URL to prevent memory leaks
+                if (window.previewImageUrl) {
+                    URL.revokeObjectURL(window.previewImageUrl);
+                }
+                
+                if (this.files && this.files[0]) {
+                    window.previewImageUrl = URL.createObjectURL(this.files[0]);
+                    preview.src = window.previewImageUrl;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                    window.previewImageUrl = null;
+                }
+            };
+
+            document.getElementById('foodImageForm').onsubmit = async function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const resultDiv = document.getElementById('image-result');
+                const submitBtn = document.querySelector('.analyze-btn');
+                
+                // Disable submit button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Analyzing...';
+                resultDiv.innerHTML = '<div class="loading-state"><div class="loader"></div><div class="loading-text">Analyzing your food image...</div></div>';
+                
+                try {
+                    const response = await fetch('/food_image_calorie/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {'X-CSRFToken': '{{ csrf_token }}'}
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Revoke previous object URL to prevent memory leaks
+                    if (window.currentImageUrl) {
+                        URL.revokeObjectURL(window.currentImageUrl);
+                    }
+                    
+                    // Create new object URL for the uploaded image
+                    const imageFile = document.getElementById('food_image').files[0];
+                    const imageUrl = imageFile ? URL.createObjectURL(imageFile) : '';
+                    window.currentImageUrl = imageUrl;
+                    
+                    // Create enhanced result display
+                    const resultHTML = `
+                        <div class="image-analysis-result">
+                            <h2 class="result-title success">Image Analysis Results</h2>
+                            <div class="analysis-content">
+                                ${data.response || 'No analysis data received.'}
+                            </div>
+                        </div>
+                    `;
+                    typeCalorieResult(resultHTML, resultDiv);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultDiv.innerHTML = `
+                        <div class="error-message">
+                            <h3>Analysis Failed</h3>
+                            <p>Sorry, we couldn't analyze your image. Please try again with a different image or check your internet connection.</p>
+                            <p><strong>Error:</strong> ${error.message}</p>
+                        </div>
+                    `;
+                } finally {
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Analyze Image';
+                }
+            };
+        </script>
+</div>
+<footer class="app-footer">
+    <div class="footer-container">
+        <div class="footer-col">
+            <h4>About AI DIETICIAN</h4>
+            <p>AI DIETICIAN is a revolutionary app designed to provide personalized diet plans, calorie tracking, and expert advice to help you achieve your health and wellness goals.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="http://127.0.0.1:8000/userhome/">Home</a></li>
+                <li><a href="http://127.0.0.1:8000/viewuserexercise/">Exercise</a></li>
+                <li><a href="http://127.0.0.1:8000/viewuseryoga/">Yoga</a></li>
+                <li><a href="http://127.0.0.1:8000/viewprofile/">Profile</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Contact Us</h4>
+            <p>Email: ai.dietician.123@gmail.com</p>
+            <p>Phone: +91 8590682450</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+    </div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

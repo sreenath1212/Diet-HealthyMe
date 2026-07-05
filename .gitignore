@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database and SQL dumps (keep your secrets safe)
+db.sqlite3
+*.sql
+*.zip
+
+# Local configuration files containing secret keys
+.env
+.vscode/
+.idea/
+
+# Media uploads and collected static files
+media/
+staticfiles/
+test_meal_plans/
+
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,92 @@
+{% include 'dietician_header.html'%}
+        <title>Healthy Me | Diet Chart</title>
+        <style>
+            form {
+                margin: 30px 325px;
+                width: 765px;
+                padding: 30px 30px;
+                border:3px solid #2E86C1;
+            }
+            h1 {
+                margin: 30px 390px;
+                font-size: 60px;
+                font-weight: bold;
+                color:#2E86C1;
+            }
+            h6 {
+                margin: 0px 500px;
+                font-size: 20px;
+                font-weight: bold;
+                color:#66BAF1;
+            }
+            th {
+                margin: 30px 990px;
+                font-size: 40px;
+                font-weight: bold;
+                color:#2E86C1;
+            }
+            input[type="text"], textarea  {
+                width: 300px;
+                height: 45px;
+                margin: 10px 10px;
+                border: 1px solid #2E86C1;
+            }
+            
+            input[type="submit"] {
+                width: 300px;
+                color: #ffffff;
+                height: 45px;
+                margin: 10px 10px;
+                background-color: #2E86C1;
+                font-weight: bold; 
+                font-size: 15px;             
+                border: 1px solid #2E86C1;
+            }
+            input[type="reset"] {
+                width: 300px;
+                color: #2E86C1;
+                height: 45px;
+                margin: 10px 10px;
+                background-color: #FFFFFF;
+                font-weight: bold; 
+                font-size: 15px;             
+                border: 1px solid #2E86C1;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <h6>- Your Health is our Wealth -</h6>
+        <form action="/dietchildaction/">
+            <table class="table">
+                <tr>
+                    <th>Diet Chart Entry</th>
+                </tr>
+            </table>
+            <table class="table">
+                <tr>
+                    <input type="hidden" value="{{id}}" name="id">
+                    <input type="hidden" value="{{d}}" name="rqid">
+                    <td><input type="hidden" placeholder=" Day" name="day" value="AllDays"></td>
+                    <td><input type="text" placeholder=" Pre Breakfast" name="pbf"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" placeholder=" Breakfast" name="bf"></td>
+                    <td><input type="text" placeholder=" Brunch" name="br"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" placeholder=" Lunch" name="lu"></td>
+                    <td><input type="text" placeholder=" Evening" name="ev"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" placeholder=" Dinner" name="di"></td>
+                    <td><textarea placeholder=" To Note" name="tnot"></textarea></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Submit" name="submit"></td>
+                    <td><input type="reset" value="Reset" name=""></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

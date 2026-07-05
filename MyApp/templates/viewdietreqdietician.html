@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>AI DIETICIAN | Diet Plan Requests</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <style>
+        body {
+            font-family: 'Muli', sans-serif;
+            position: relative;
+            z-index: 0;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/static/assets/images/food_background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 4px;
+            background: transparent;
+            border-radius: 28px;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+            background-color: #ff7e5f;
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .navbar {
+            border-radius: 0;
+            min-height: 72px;
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: column !important;
+                gap: 4px;
+                width: 100%;
+                align-items: flex-start !important;
+            }
+            .navbar-nav .nav-link {
+                width: 100%;
+                margin: 4px 0;
+                border-radius: 14px;
+                text-align: left;
+                padding-left: 20px !important;
+            }
+            .navbar-brand {
+                font-size: 1.3rem !important;
+            }
+            .container {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 1400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title {
+            text-align: center;
+            color: #343a40;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        /* Table Styles */
+        .requests-table {
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .requests-table .table {
+            margin-bottom: 0;
+        }
+
+        .requests-table th {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 20px 15px;
+            border: none;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .requests-table td {
+            padding: 18px 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .requests-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .requests-table tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-request {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            color: white;
+        }
+
+        .status-added {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-diet {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-yoga {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-exercise {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            font-weight: 700;
+        }
+
+        .text-success {
+            color: #28a745 !important;
+            font-weight: 600;
+        }
+
+        /* Data Display */
+        .data-value {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .bmi-value {
+            font-weight: 700;
+            color: #007bff;
+        }
+
+        .patient-name {
+            font-weight: 700;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        /* Footer Styles */
+        .app-footer {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            padding: 60px 0 0 0;
+            margin-top: 60px;
+        }
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .footer-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        .footer-col h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        }
+        .footer-col p, .footer-col li {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        .footer-col ul a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s, padding-left 0.2s;
+        }
+        .footer-col ul a:hover {
+            color: #ffffff;
+            padding-left: 5px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 24px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 20px;
+                padding: 20px;
+            }
+            .page-title {
+                font-size: 2rem;
+            }
+            .requests-table {
+                font-size: 0.9rem;
+            }
+            .requests-table th,
+            .requests-table td {
+                padding: 12px 8px;
+            }
+            .action-buttons {
+                gap: 6px;
+            }
+            .action-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            }
+        </style>
+    </head>
+    <body>
+
+    <!-- Header -->
+    <section class="w3l-bootstrap-header">
+      <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+        <div class="container" style="max-width: 1280px;">
+          <a class="navbar-brand d-flex align-items-center" href="index.html" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+            <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+            <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav align-items-center" style="gap: 12px;">
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/dieticianhome/">Home</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/calorie/">Add Food Calories</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/login/">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="page-title">Diet Plan Requests</h1>
+        <p class="page-subtitle">Review and manage patient diet plan requests. Add personalized diet plans, yoga routines, and exercise programs.</p>
+        
+        {% if list %}
+            <div class="requests-table">
+        <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Height (cm)</th>
+                            <th>Weight (kg)</th>
+                            <th>BMI</th>
+                            <th>Result</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+            </tr>
+                    </thead>
+                    <tbody>
+            {% for i in list %}
+            <tr>
+                            <td><span class="patient-name">{{i.first_name}} {{i.last_name}}</span></td>
+                            <td><span class="data-value">{{i.hght}}</span></td>
+                            <td><span class="data-value">{{i.wght}}</span></td>
+                            <td><span class="bmi-value">{{i.bmi}}</span></td>
+                            <td><span class="data-value">{{i.res}}</span></td>
+                                                         <td>
+                {% if i.status == 'Request Sent' %}
+                                     <span class="status-badge status-request">{{i.status}}</span>
+                                 {% elif i.status == 'Diet Plan Added' %}
+                                     <span class="status-badge status-added">{{i.status}}</span>
+                                 {% elif i.status == 'Completed' %}
+                                     <span class="status-badge status-completed">{{i.status}}</span>
+                                 {% else %}
+                                     <span class="status-badge status-request">{{i.status}}</span>
+                {% endif %}
+                             </td>
+                                                         <td>
+                                 {% if i.status == 'Request Sent' %}
+                                     <div class="action-buttons">
+                                         <a href="/dietmaster?id={{i.rqid}}" class="action-btn btn-diet">Add Diet Plan</a>
+                                         <a href="/yoga?id={{ i.cid }}" class="action-btn btn-yoga">Add Yoga</a>
+                                         <a href="/exercise?id={{ i.cid }}" class="action-btn btn-exercise">Add Exercise</a>
+                                     </div>
+                                 {% elif i.status == 'Diet Plan Added' %}
+                                     <div class="action-buttons">
+                                         <a href="/yoga?id={{ i.cid }}" class="action-btn btn-yoga">Add Yoga</a>
+                                         <a href="/exercise?id={{ i.cid }}" class="action-btn btn-exercise">Add Exercise</a>
+                                         <a href="/submit_complete_plan/?rid={{i.rqid}}" class="action-btn btn-submit" onclick="return confirm('Are you sure you want to submit the complete plan? This will notify the patient.')">Submit Complete Plan</a>
+                                     </div>
+                                 {% elif i.status == 'Completed' %}
+                                     <span class="text-success"><i class="fas fa-check-circle"></i> Plan Completed</span>
+                {% endif %}
+                             </td>
+            </tr>
+            {% endfor %}
+                    </tbody>
+        </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No Diet Plan Requests</h3>
+                <p>There are currently no pending diet plan requests from patients.</p>
+                <p>New requests will appear here when patients submit their diet plan applications.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>About AI DIETICIAN</h4>
+                <p>AI DIETICIAN is a revolutionary platform that connects expert dieticians with patients, providing personalized nutrition guidance and comprehensive health support.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="http://127.0.0.1:8000/dieticianhome/">Home</a></li>
+                    <li><a href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a></li>
+                    <li><a href="/calorie/">Add Food Calories</a></li>
+                    <li><a href="#">Profile</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <p>Email: ai.dietician.123@gmail.com</p>
+                <p>Phone: +91 8590682450</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </body>
+</html>

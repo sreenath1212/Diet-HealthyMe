@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>AI DIETICIAN | Dietician Home</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: 'Muli', sans-serif;
+            position: relative;
+            z-index: 0;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/static/assets/images/food_background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 4px;
+            background: transparent;
+            border-radius: 28px;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+            background-color: #ff7e5f;
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .navbar {
+            border-radius: 0;
+            min-height: 72px;
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: column !important;
+                gap: 4px;
+                width: 100%;
+                align-items: flex-start !important;
+            }
+            .navbar-nav .nav-link {
+                width: 100%;
+                margin: 4px 0;
+                border-radius: 14px;
+                text-align: left;
+                padding-left: 20px !important;
+            }
+            .navbar-brand {
+                font-size: 1.3rem !important;
+            }
+            .container {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 1000px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-title {
+            text-align: center;
+            color: #343a40;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Action Cards for Dieticians */
+        .dietician-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: white;
+        }
+
+        .action-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .action-card p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .action-card.diet-requests {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+        }
+
+        .action-card.add-calories {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .action-card.view-profile {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        }
+
+        .action-card.active-chats {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        }
+
+        .chat-count {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Chat Modal Styles */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .chat-modal-content {
+            background: #ffffff;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .chat-modal-header {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .close-modal:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-modal-body {
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* Chat Table Styles for Modal */
+        .chat-table {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .chat-table .table {
+            margin-bottom: 0;
+        }
+
+        .chat-table th {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 20px;
+            border: none;
+            text-align: center;
+        }
+
+        .chat-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        .chat-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .chat-table tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        .chat-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: color 0.2s, transform 0.2s;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: rgba(0, 123, 255, 0.1);
+        }
+
+        .chat-link:hover {
+            color: #0056b3;
+            text-decoration: none;
+            transform: translateX(5px);
+            background: rgba(0, 123, 255, 0.15);
+        }
+
+        .no-chats {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.2rem;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        /* Footer Styles */
+        .app-footer {
+            background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            padding: 60px 0 0 0;
+            margin-top: 60px;
+        }
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .footer-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        .footer-col h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        }
+        .footer-col p, .footer-col li {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        .footer-col ul a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s, padding-left 0.2s;
+        }
+        .footer-col ul a:hover {
+            color: #ffffff;
+            padding-left: 5px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 24px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 20px;
+                padding: 20px;
+            }
+            .page-title {
+                font-size: 2rem;
+            }
+            .dietician-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+  </head>
+    <body>
+
+    <!-- Header -->
+    <section class="w3l-bootstrap-header">
+      <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+        <div class="container" style="max-width: 1280px;">
+          <a class="navbar-brand d-flex align-items-center" href="index.html" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+            <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+            <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav align-items-center" style="gap: 12px;">
+              <li class="nav-item active">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/dieticianhome/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="/calorie/">Add Food Calories</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/login/">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="page-title">Dietician Dashboard</h1>
+
+        <!-- Dietician Action Cards -->
+        <div class="dietician-actions">
+            <a href="http://127.0.0.1:8000/viewdietplanreqdietician/" class="action-card diet-requests">
+                <h3>Diet Plan Requests</h3>
+                <p>Review and respond to patient diet plan requests. Create personalized meal plans based on their health goals and preferences.</p>
+            </a>
+            
+            <a href="/calorie/" class="action-card add-calories">
+                <h3>Add Food Calories</h3>
+                <p>Update the food database with nutritional information. Add new foods and their calorie content to help patients track their intake.</p>
+            </a>
+            
+            <a href="#" class="action-card active-chats" onclick="toggleChats()">
+                <h3>Active Chats</h3>
+                <p>View and manage ongoing conversations with patients. Click to see all active chat sessions.</p>
+                <div class="chat-count" id="chatCount">
+                    {% if list %}
+                        {{ list|length }} active conversation{{ list|length|pluralize }}
+                    {% else %}
+                        No active chats
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>About AI DIETICIAN</h4>
+                <p>AI DIETICIAN is a revolutionary platform that connects expert dieticians with patients, providing personalized nutrition guidance and comprehensive health support.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="http://127.0.0.1:8000/dieticianhome/">Home</a></li>
+                    <li><a href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a></li>
+                    <li><a href="/calorie/">Add Food Calories</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <p>Email: ai.dietician.123@gmail.com</p>
+                <p>Phone: +91 8590682450</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-modal-content">
+            <div class="chat-modal-header">
+                <h2>Active Chats</h2>
+                <button class="close-modal" onclick="closeChats()">&times;</button>
+            </div>
+            <div class="chat-modal-body">
+                {% if list %}
+                    <div class="chat-table">
+        <table class="table">
+                            <thead>
+            <tr>
+                                    <th>Patient Name</th>
+            </tr>
+                            </thead>
+                            <tbody>
+            {% for i in list %}
+            <tr>
+                                    <td class="text-center">
+                                        <a href="/dchat?id={{i.RID}}" class="chat-link">
+                                            {{i.FIRST_NAME}} {{i.LAST_NAME}}
+                                        </a>
+                                    </td>
+            </tr>
+            {% endfor %}
+                            </tbody>
+        </table>
+                    </div>
+                {% else %}
+                    <div class="no-chats">
+                        <p>No active chats at the moment.</p>
+                        <p>Patients will appear here when they start a conversation.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function toggleChats() {
+            var modal = document.getElementById('chatModal');
+            modal.style.display = 'block';
+        }
+
+        function closeChats() {
+            var modal = document.getElementById('chatModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById('chatModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                var modal = document.getElementById('chatModal');
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+
+    </body>
+</html>

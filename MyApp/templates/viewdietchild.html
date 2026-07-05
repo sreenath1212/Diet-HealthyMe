@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Healthy Me | Diet Child</title>
+        <style>
+            .table {
+                border: 3px solid  #6495ED;
+                color: #6495ED;
+                font-size: 17px;
+                margin: 0px 70px;
+            }
+            th {
+                padding: 10px 10px;
+                border: 3px solid  #6495ED;
+            }
+            td {
+                padding: 10px 10px;
+                border: 3px solid  #6495ED;
+            }
+            h1 {
+                margin: 10px 555px;
+                font-size: 80px;
+                font-weight: bold;
+                color:#2E86C1;
+            }
+            h3 {
+                margin: 50px 555px;
+                font-size: 40px;
+                font-weight: bold;
+                color:#6495ED;
+            }
+            h6 {
+                margin: 0px 573px;
+                font-size: 30px;
+                font-weight: bold;
+                color:#66BAF1;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Healthy Me</h1>
+        <h6>- Your Health is our Wealth -</h6>
+        <h3>VIEW DIET CHILD</h3>
+        <table class="table">
+            <tr>
+                <th>CDTID</th><th>DTID</th><th>DAY</th><th>PBF</th><th>BF</th><th>BR</th><th>LU</th><th>EV</th><th>DN</th><th>TNOT</th><th>ACTION</th>
+            </tr>
+            {% for i in list %}
+            <tr>
+                <td>{{i.CDTID}}</td><td>{{i.DTID}}</td><td>{{i.DAY}}</td><td>{{i.PBF}}</td><td>{{i.BF}}</td><td>{{i.BR}}</td><td>{{i.LU}}</td><td>{{i.EV}}</td><td>{{i.DN}}</td><td>{{i.TNOT}}</td><td><a href="/deldietchild?id={{i.CDTID}}">DELETE</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

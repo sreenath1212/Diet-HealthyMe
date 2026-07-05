@@ -1,0 +1,64 @@
+{% include 'user_header.html'%}
+    <title>Healthy Me | Profile</title>
+    <style>
+        .div-profile {
+            margin: 75px 530px;
+        }
+        input[type=submit] {
+            font-weight: bolder;
+            background-color: #17449e;
+            color: #ffffff;
+            padding: 3px 60px;
+            border-radius: 20px;
+            border: 2px solid #17449e;
+        }
+        .a-cancel {
+            background-color: #ffffff;
+            border: 2px solid #17449e;
+            color: #17449e;
+            padding: 5px 40px;
+            border-radius: 20px;
+            font-weight: bolder;
+            margin: 10px 0px;
+        }
+        th {
+            width: 300px;
+        }
+        input[type=text] {
+            border: 1px solid #17449e;
+        }
+    </style>
+    <body>
+        <div class="div-profile">
+            <form action="/editprofileaction/">
+                <table class="table">
+                    {% for i in list %}
+                    <tr>
+                        <th>First Name:</th><td><input type="text" value="{{i.FIRST_NAME}}" name="fname"></td>
+                    </tr>
+                    <tr>
+                        <th>Last Name:</th><td><input type="text" value="{{i.LAST_NAME}}" name="lname"></td>
+                    </tr>
+                    <tr>
+                        <th>Email ID:</th><td><input type="text" value="{{i.EMAIL}}" name="email" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>Address:</th><td><input type="text" value="{{i.ADDRESS}}" name="address"></td>
+                    </tr>
+                    <tr>
+                        <th>Phone:</th><td><input type="text" value="{{i.PHONE}}" name="phone"></td>
+                    </tr>
+                    <tr>
+                        <th>Date of Birth:</th><td><input type="text" value="{{i.DOB}}" name="dob"></td>
+                    </tr>
+                    <tr>
+                        <th>Gender:</th><td><input type="text" value="{{i.GENDER}}" name="gender"></td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td><input type="submit" value="OK" name=""></td><td><a class="a-cancel" href="http://127.0.0.1:8000/viewprofile/">Cancel</a></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>

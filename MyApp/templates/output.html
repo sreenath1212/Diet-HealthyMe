@@ -1,0 +1,63 @@
+{% include 'user_header.html'%}
+        <title>Healthy Me | Registration</title>
+        <link rel="icon" href="../../media/pictures/logo.png" type="image/x-icon">
+        <style>
+            /*body {
+                background-image: url("../../media/Background/186020.jpg");
+            }*/
+            form {
+                margin: 57px 390px;
+            }
+            .table {
+                background-color: #ffffff;
+            }
+            .tr-content {
+                background-color: #17449e;
+                color: #FFFFFF;
+                font-weight: bolder;
+                margin: 0px 30px;
+                text-transform: capitalize;
+                font-size: 21px;                
+            }
+            select, textarea, input[type="text"], input[type="date"], input[type="email"], input[type="phone"], input[type="name"], input[type="password"] {
+                width: 350px;
+                height: 40px;
+                margin: 10px 10px;
+                border: 1px solid #17449e;
+            }
+            input[type="submit"] {
+                width: 350px;
+                color: #ffffff;
+                height: 40px;
+                margin: 10px 10px;
+                background-color: #17449e;
+                font-weight: bold; 
+                font-size: 15px;             
+                border: 1px solid #17449e;
+            }
+            input[type="reset"] {
+                width: 350px;
+                color: #17449e;
+                height: 40px;
+                margin: 10px 10px;
+                background-color: #FFFFFF;
+                font-weight: bold; 
+                font-size: 15px;             
+                border: 1px solid #17449e;
+            }
+            a {
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+    
+        <br/>
+       <center>
+        <h2>SUGGESTED FOOD ITEMS</h2>
+        <table>
+{% for i in fl %}
+<tr><th>{{i.f}}</th></tr>
+
+{% endfor %}</table></center>
+    </body>

@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>AI DIETICIAN | Registered Users</title>
+    <link rel="icon" href="/static/assets/images/award.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: 'Muli', sans-serif;
+            position: relative;
+            z-index: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/static/assets/images/food_background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 4px;
+            background: transparent;
+            border-radius: 28px;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus, .navbar-nav .nav-item.active .nav-link {
+            background-color: #ff7e5f;
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .navbar {
+            border-radius: 0;
+            min-height: 72px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 40px 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .page-title {
+            text-align: center;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 20px auto;
+            max-width: 1400px;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            background: transparent;
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #007bff 0%, #0d47a1 100%);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 15px 12px;
+            text-align: left;
+            border: none;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .table tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: rgba(0, 123, 255, 0.02);
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: #ffffff;
+        }
+
+        .btn-approve:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: #ffffff;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Footer Styles */
+        .app-footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            padding: 40px 0 20px;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-col h4 {
+            color: #ff7e5f;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ff7e5f;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+            
+            .table-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <section class="w3l-bootstrap-header">
+      <nav class="navbar navbar-expand-md navbar-light py-3" style="box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1); background: linear-gradient(90deg, #007bff 0%, #0d47a1 100%);">
+        <div class="container" style="max-width: 1280px;">
+          <a class="navbar-brand d-flex align-items-center" href="index.html" style="gap: 12px; font-weight: 700; font-size: 1.8rem; color: #ffffff;">
+            <img src="/static/assets/images/award.png" class="img-fluid" width="50px" style="margin-right: 8px; filter: brightness(0) invert(1);"> AI DIETICIAN
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            style="border: 2px solid #fff; background: transparent; color: #fff; border-radius: 8px; padding: 6px 12px;">
+            <span style="font-size: 1.3rem; font-weight: 600;">Menu</span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav align-items-center" style="gap: 12px;">
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/adminhome/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewreg/">Registered Users</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/login/">Log Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <h1 class="page-title">Registered Users</h1>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Gender</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in list %}
+                        <tr>
+                            <td>{{i.RID}}</td>
+                            <td>{{i.FIRST_NAME}}</td>
+                            <td>{{i.LAST_NAME}}</td>
+                            <td>{{i.EMAIL}}</td>
+                            <td>{{i.PHONE}}</td>
+                            <td>{{i.ADDRESS}}</td>
+                            <td>{{i.GENDER}}</td>
+                            <td>
+                                <span class="badge badge-{% if i.status == 'approve' %}success{% elif i.status == 'pending' %}warning{% else %}secondary{% endif %}">
+                                    {{i.status|title}}
+                                </span>
+                            </td>
+                            <td>
+                                {% if i.status == 'pending' %}
+                                    <a href="/approve?id={{i.RID}}" class="action-btn btn-approve">Approve</a>
+                                {% endif %}
+                                <a href="/deletereg?id={{i.RID}}" class="action-btn btn-delete" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>About AI DIETICIAN</h4>
+                <p>AI DIETICIAN is a revolutionary platform that connects expert dieticians with patients, providing personalized nutrition guidance and comprehensive health support.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="http://127.0.0.1:8000/adminhome/">Home</a></li>
+                    <li><a href="http://127.0.0.1:8000/viewreg/">Registered Users</a></li>
+                    <li><a href="http://127.0.0.1:8000/login/">Log Out</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <p>Email: ai.dietician.123@gmail.com</p>
+                <p>Phone: +91 8590682450</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AI DIETICIAN. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

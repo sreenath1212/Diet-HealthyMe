@@ -1,0 +1,111 @@
+{% include 'header.html'%}
+        <title>Healthy Me | OTP Verification</title>
+        <link rel="icon" href="../../media/pictures/logo.png" type="image/x-icon">
+        <style>
+            form {
+                margin: 63px 515px;
+                width: 160px;
+                padding: 50px 30px;
+            }
+            .table {
+                width: 160px;
+                padding: 20px 10px;
+            }
+            th {
+                margin: 30px 590px;
+                font-size: 30px;
+                font-weight: bold;
+                color:#ffffff;
+            }
+            input[type="email"], input[type="password"], input[type="text"] {
+                width: 350px;
+                height: 45px;
+                margin: 10px 10px;
+                border: 1px solid #17449e;
+                color: #17449e;
+                text-align: center;
+                font-size: 18px;
+                letter-spacing: 5px;
+            }
+            input[type="submit"] {
+                width: 350px;
+                color: #ffffff;
+                height: 45px;
+                margin: 10px 10px;
+                background-color: #17449e;
+                font-weight: bold; 
+                font-size: 18px;             
+                border: 1px solid #17449e;
+            }
+            a {
+                font-weight: bolder;
+            }
+            .error {
+                color: #ff0000;
+                background-color: #ffe6e6;
+                padding: 10px;
+                border-radius: 5px;
+                margin: 10px 0;
+                text-align: center;
+            }
+            .success {
+                color: #008000;
+                background-color: #e6ffe6;
+                padding: 10px;
+                border-radius: 5px;
+                margin: 10px 0;
+                text-align: center;
+            }
+            .otp-info {
+                background-color: #f0f8ff;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 10px 0;
+                text-align: center;
+                border-left: 4px solid #17449e;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="/verify_otp/" method="POST">
+            {% csrf_token %}
+            <table class="table">
+                <tr>
+                    <td><h2 style="text-align: center; color: #17449e;">OTP Verification</h2></td>
+                </tr>
+                <tr>
+                    <td><div class="otp-info">
+                        <p><strong>OTP sent to:</strong> {{ email }}</p>
+                        <p>Please check your email and enter the 6-digit OTP below.</p>
+                    </div></td>
+                </tr>
+                {% if error %}
+                <tr>
+                    <td><div class="error">{{ error }}</div></td>
+                </tr>
+                {% endif %}
+                {% if success %}
+                <tr>
+                    <td><div class="success">{{ success }}</div></td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td><input type="hidden" name="email" value="{{ email }}"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" placeholder="Enter 6-digit OTP" name="otp" maxlength="6" pattern="[0-9]{6}" required></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Verify OTP" name="submit"></td>
+                </tr>
+                <tr>
+                    <td><center><a href="http://127.0.0.1:8000/forgot_password/">Resend OTP</a></center></td>
+                </tr>
+                <tr>
+                    <td><center><a href="http://127.0.0.1:8000/login/">Back to Login</a></center></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+{% include 'footer.html'%} 
