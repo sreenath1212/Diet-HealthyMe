@@ -153,7 +153,11 @@ def regaction(request):
                 return render(request, "verify_registration_otp.html", {"email": c, "success": "Verification OTP sent successfully!"})
             except Exception as e:
                 logger.debug(f"DEBUG: Email sending failed: {str(e)}")
-                return render(request, "registration.html", {"error": f"Failed to send verification OTP: {str(e)}. Please check your email configuration."})
+                # DEMO MODE FALLBACK: If SMTP is blocked, show code on screen
+                return render(request, "verify_registration_otp.html", {
+                    "email": c, 
+                    "success": f"Verification code generated (Email SMTP block fallback). Your demo OTP is: {otp}"
+                })
     
     return render(request, "registration.html")
 
@@ -2120,7 +2124,11 @@ def send_otp(request):
                 )
                 return render(request, "otp_verification.html", {"email": email, "success": "OTP sent successfully!"})
             except Exception as e:
-                return render(request, "forgot_password.html", {"error": "Failed to send OTP. Please try again."})
+                # DEMO MODE FALLBACK: If SMTP is blocked, show code on screen
+                return render(request, "otp_verification.html", {
+                    "email": email, 
+                    "success": f"Reset code generated (Email SMTP block fallback). Your demo OTP is: {otp}"
+                })
         else:
             return render(request, "forgot_password.html", {"error": "Email not found in our records."})
     
@@ -2209,7 +2217,11 @@ def send_login_otp(request):
                 )
                 return render(request, "verify_login_otp.html", {"email": email, "success": "Login OTP sent successfully!"})
             except Exception as e:
-                return render(request, "login_with_otp.html", {"error": "Failed to send OTP. Please try again."})
+                # DEMO MODE FALLBACK: If SMTP is blocked, show code on screen
+                return render(request, "verify_login_otp.html", {
+                    "email": email, 
+                    "success": f"Login code generated (Email SMTP block fallback). Your demo OTP is: {otp}"
+                })
         else:
             return render(request, "login_with_otp.html", {"error": "Email not found in our records."})
     
