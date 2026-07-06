@@ -12,3 +12,5 @@ opencv-python-headless
 grpcio
 grpcio-status
 google-auth-oauthlib
+matplotlib
+seaborn
