@@ -1,0 +1,8 @@
+django==1.8.19
+pandas
+numpy
+scikit-learn
+mysqlclient
+python-dotenv
+google-generativeai
+gunicorn
