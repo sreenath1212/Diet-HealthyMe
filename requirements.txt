@@ -9,3 +9,5 @@ gunicorn
 Pillow
 psutil
 opencv-python-headless
+grpcio
+grpcio-status
