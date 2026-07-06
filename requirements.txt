@@ -6,3 +6,4 @@ mysqlclient
 python-dotenv
 google-generativeai
 gunicorn
+Pillow
