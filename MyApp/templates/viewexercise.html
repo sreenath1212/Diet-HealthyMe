@@ -324,25 +324,25 @@
           <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
             <ul class="navbar-nav align-items-center" style="gap: 12px;">
               <li class="nav-item">
-                <a class="nav-link px-4 py-2" href="{% if user_type == 'dietician' %}http://127.0.0.1:8000/dieticianhome/{% else %}http://127.0.0.1:8000/adminhome/{% endif %}">Home</a>
+                <a class="nav-link px-4 py-2" href="{% if user_type == 'dietician' %}/dieticianhome/{% else %}/adminhome/{% endif %}">Home</a>
               </li>
               {% if user_type == 'dietician' %}
               <li class="nav-item">
-                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a>
+                <a class="nav-link px-4 py-2" href="/viewdietplanreqdietician/">Diet Plan Requests</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link px-4 py-2" href="/calorie/">Add Food Calories</a>
               </li>
               {% else %}
               <li class="nav-item">
-                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewreg/">Registered Users</a>
+                <a class="nav-link px-4 py-2" href="/viewreg/">Registered Users</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/viewyoga/">View Yoga</a>
+                <a class="nav-link px-4 py-2" href="/viewyoga/">View Yoga</a>
               </li>
               {% endif %}
               <li class="nav-item">
-                <a class="nav-link px-4 py-2" href="http://127.0.0.1:8000/login/">Log Out</a>
+                <a class="nav-link px-4 py-2" href="/login/">Log Out</a>
               </li>
             </ul>
           </div>
@@ -402,15 +402,15 @@
             <div class="footer-col">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="{% if user_type == 'dietician' %}http://127.0.0.1:8000/dieticianhome/{% else %}http://127.0.0.1:8000/adminhome/{% endif %}">Home</a></li>
+                    <li><a href="{% if user_type == 'dietician' %}/dieticianhome/{% else %}/adminhome/{% endif %}">Home</a></li>
                     {% if user_type == 'dietician' %}
-                    <li><a href="http://127.0.0.1:8000/viewdietplanreqdietician/">Diet Plan Requests</a></li>
+                    <li><a href="/viewdietplanreqdietician/">Diet Plan Requests</a></li>
                     <li><a href="/calorie/">Add Food Calories</a></li>
                     {% else %}
-                    <li><a href="http://127.0.0.1:8000/viewreg/">Registered Users</a></li>
-                    <li><a href="http://127.0.0.1:8000/viewyoga/">View Yoga</a></li>
+                    <li><a href="/viewreg/">Registered Users</a></li>
+                    <li><a href="/viewyoga/">View Yoga</a></li>
                     {% endif %}
-                    <li><a href="http://127.0.0.1:8000/viewexercise/">View Exercises</a></li>
+                    <li><a href="/viewexercise/">View Exercises</a></li>
                 </ul>
             </div>
             <div class="footer-col">

@@ -16,10 +16,10 @@ def test_session_handling():
     print("\n1. Testing Password Login Session...")
     session1 = requests.Session()
     
-    # Simulate password login (you'll need to replace with actual credentials)
+    # Simulate password login (using actual user from schema)
     login_data = {
-        'email': 'test@example.com',  # Replace with actual test user
-        'password': 'testpassword'    # Replace with actual test password
+        'email': 'sneha@gmail.com',
+        'password': 'sneha'
     }
     
     response = session1.get(f"{base_url}/searchlogin/", params=login_data)
@@ -27,17 +27,17 @@ def test_session_handling():
     print(f"   Session cookies: {dict(session1.cookies)}")
     
     if session1.cookies.get('sessionid'):
-        print(f"   ✅ Session created: {session1.cookies['sessionid']}")
+        print(f"   [OK] Session created: {session1.cookies['sessionid']}")
         
         # Test session persistence
         response = session1.get(f"{base_url}/userhome/")
         print(f"   Home page status: {response.status_code}")
         if response.status_code == 200:
-            print("   ✅ Session persists correctly")
+            print("   [OK] Session persists correctly")
         else:
-            print("   ❌ Session lost")
+            print("   [ERROR] Session lost")
     else:
-        print("   ⚠ No session created")
+        print("   [WARN] No session created")
     
     # Test 2: Google OAuth Session (simulation)
     print("\n2. Testing Google OAuth Session...")
@@ -49,7 +49,7 @@ def test_session_handling():
     print(f"   Initial session cookies: {dict(session2.cookies)}")
     
     if session2.cookies.get('sessionid'):
-        print(f"   ✅ Initial session created: {session2.cookies['sessionid']}")
+        print(f"   [OK] Initial session created: {session2.cookies['sessionid']}")
         
         # Simulate OAuth callback with invalid code (should maintain session)
         redirect_url = response.headers.get('Location', '')
@@ -68,11 +68,11 @@ def test_session_handling():
         print(f"   Session cookies after callback: {dict(session2.cookies)}")
         
         if session2.cookies.get('sessionid'):
-            print(f"   ✅ Session maintained: {session2.cookies['sessionid']}")
+            print(f"   [OK] Session maintained: {session2.cookies['sessionid']}")
         else:
-            print("   ❌ Session lost during callback")
+            print("   [ERROR] Session lost during callback")
     else:
-        print("   ⚠ No initial session created")
+        print("   [WARN] No initial session created")
     
     # Test 3: Session Test Endpoint
     print("\n3. Testing Session Test Endpoint...")

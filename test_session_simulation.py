@@ -35,11 +35,11 @@ def test_session_simulation():
         
         if response.status_code == 200:
             if "Google OAuth error" in response.text or "No authorization code" in response.text:
-                print("   ✓ Correctly handles invalid OAuth parameters")
+                print("   [OK] Correctly handles invalid OAuth parameters")
             else:
-                print("   ⚠ Unexpected response")
+                print("   [WARN] Unexpected response")
         else:
-            print(f"   ⚠ Unexpected status: {response.status_code}")
+            print(f"   [WARN] Unexpected status: {response.status_code}")
             
     except Exception as e:
         print(f"   Error: {e}")
@@ -52,9 +52,9 @@ def test_session_simulation():
         print(f"   Session cookies: {dict(session.cookies)}")
         
         if "Please login first" in response.text:
-            print("   ✓ Session correctly shows not logged in")
+            print("   [OK] Session correctly shows not logged in")
         else:
-            print("   ⚠ Unexpected session state")
+            print("   [WARN] Unexpected session state")
             
     except Exception as e:
         print(f"   Error: {e}")
@@ -81,9 +81,9 @@ def test_regular_login_comparison():
     print(f"   Session cookie: {dict(session.cookies)}")
     
     if "Please login first" in response.text:
-        print("   ✓ Correctly requires login")
+        print("   [OK] Correctly requires login")
     else:
-        print("   ⚠ Unexpected response")
+        print("   [WARN] Unexpected response")
     
     print("\n=== Comparison Complete ===")
 

@@ -37,6 +37,9 @@ from google.auth.transport import requests as google_requests
 # Module-level logger
 logger = logging.getLogger(__name__)
 
+# Email sender configuration dynamically falling back to SMTP host user
+FROM_EMAIL = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
+
 
 # OTP storage for password reset, login, and registration (in production, use Redis or database)
 otp_storage = {}
@@ -81,8 +84,8 @@ def regaction(request):
                 with connection.cursor() as cursor:
                     # Insert into registration table
                     sql = """INSERT INTO REGISTRATION 
-                            (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                            (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
                     
                     cursor.execute(sql, [a, b, e, h, c, j, d])
                     
@@ -94,7 +97,7 @@ def regaction(request):
                     # Insert into login table
                     # D4 FIX: Hash user password on Google OAuth registration
                     from django.contrib.auth.hashers import make_password
-                    sql2 = "INSERT INTO login (UID, UNAME, upass, UTYPE) VALUES (%s, %s, %s, 'user')"
+                    sql2 = "INSERT INTO login (UID, UNAME, upass, UTYPE, status) VALUES (%s, %s, %s, 'user', '')"
                     cursor.execute(sql2, [user_id, c, make_password(i)])
                     
                     # Set session variables for automatic login
@@ -111,53 +114,37 @@ def regaction(request):
                         del request.session['google_name']
                     
                     # Redirect directly to user home
-                    return render(request, 'user_home.html', {"success": "Welcome! Your account has been created and you are now logged in."})
+                    return redirect('/userhome/')
                     
             except Exception as e:
                 print(f"Error creating Google OAuth user: {str(e)}")
                 return render(request, "registration.html", {"error": "Failed to create account. Please try again."})
         else:
-            # Regular registration flow with OTP verification
-            # Store registration data temporarily
-            registration_data = {
-                'fname': a,
-                'lname': b,
-                'email': c,
-                'dob': d,
-                'address': e,
-                'phone': h,
-                'password': i,
-                'gender': j
-            }
-            
-            # Generate OTP
-            otp = random.randint(100000, 999999)
-            # D1 FIX: Store OTP with creation timestamp to enforce 10-minute expiry
-            registration_otp_storage[c] = {'otp': otp, 'created_at': time.time()}
-            pending_registrations[c] = registration_data
-            
-            # Send OTP via email
+            # Regular registration flow - Direct database insert (No OTP)
             try:
-                logger.debug(f"DEBUG: Attempting to send OTP {otp} to {c}")
-                logger.debug(f"DEBUG: EMAIL_HOST_USER = {settings.EMAIL_HOST_USER}")
-                logger.debug(f"DEBUG: EMAIL_HOST_PASSWORD = {'*' * len(settings.EMAIL_HOST_PASSWORD) if settings.EMAIL_HOST_PASSWORD else 'NOT SET'}")
-                
-                send_mail(
-                    subject="Email Verification for Registration - HealthyMe",
-                    message=f"Your verification OTP is: {otp}. Please enter this code to complete your registration. This OTP is valid for 10 minutes.",
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[c],
-                    fail_silently=False,
-                )
-                logger.debug(f"DEBUG: Email sent successfully to {c}")
-                return render(request, "verify_registration_otp.html", {"email": c, "success": "Verification OTP sent successfully!"})
+                with connection.cursor() as cursor:
+                    # Insert into registration table
+                    sql = """INSERT INTO REGISTRATION 
+                            (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
+                    cursor.execute(sql, [a, b, e, h, c, j, d])
+                    
+                    # Get user ID
+                    cursor.execute("SELECT LAST_INSERT_ID()")
+                    user_id = cursor.fetchone()[0]
+                    
+                    # Insert into login table
+                    from django.contrib.auth.hashers import make_password
+                    sql2 = "INSERT INTO login (UID, UNAME, upass, UTYPE, status) VALUES (%s, %s, %s, 'user', '')"
+                    cursor.execute(sql2, [user_id, c, make_password(i)])
+                    
+                    return render(request, "login.html", {"success": "Registration completed successfully! Please login with your email and password."})
+                    
             except Exception as e:
-                logger.debug(f"DEBUG: Email sending failed: {str(e)}")
-                # DEMO MODE FALLBACK: If SMTP is blocked, show code on screen
-                return render(request, "verify_registration_otp.html", {
-                    "email": c, 
-                    "success": f"Verification code generated (Email SMTP block fallback). Your demo OTP is: {otp}"
-                })
+                logger.error(f"Error directly registering user: {str(e)}")
+                import traceback
+                logger.error(traceback.format_exc())
+                return render(request, "registration.html", {"error": f"Failed to create account: {str(e)}"})
     
     return render(request, "registration.html")
 
@@ -278,15 +265,15 @@ def searchlogin(request):
             request.session['status'] = user_row[4]
 
             if request.session['UTYPE'] == 'admin':
-                return render(request, 'admin_home.html')
+                return redirect('/adminhome/')
             elif request.session['UTYPE'] == 'user':
                 if request.session['status'] == 'paid':
-                    return render(request, 'user_home.html')
+                    return redirect('/userhome/')
                 else:
                     msg = "<script>alert('Payment is pending'); window.location='/home/';</script>"
                     return HttpResponse(msg)
             elif request.session['UTYPE'] == 'dietician':
-                return dieticianhome(request)
+                return redirect('/dieticianhome/')
         else:
             html = "<script>alert('Invalid username or password'); window.location='/login/';</script>"
             return HttpResponse(html)
@@ -365,7 +352,9 @@ def editprofileaction(request):
 	return HttpResponse(msg)
 
 def exercise(request):
-	id=request.GET['id']
+	id = request.GET.get('id')
+	if not id:
+		return HttpResponse("<script>alert('Invalid Request: User ID is required.');window.location='/viewreg/';</script>")
 	# Get user type from session for dynamic home link
 	user_type = request.session.get('UTYPE', 'admin')
 	return render(request,'exercise.html',{'id':id, 'user_type': user_type})
@@ -443,7 +432,9 @@ def viewuseryoga(request):
 		list.append(w)
 	return render(request,'viewuseryoga.html',{'list':list})
 def yoga(request):
-	id=request.GET['id']
+	id = request.GET.get('id')
+	if not id:
+		return HttpResponse("<script>alert('Invalid Request: User ID is required.');window.location='/viewreg/';</script>")
 	# Get user type from session for dynamic home link
 	user_type = request.session.get('UTYPE', 'admin')
 	return render(request,'yoga.html',{'id':id, 'user_type': user_type})
@@ -527,7 +518,9 @@ def deleteyoga(request):
 	return HttpResponse(h)
 
 def dietmaster(request):
-	id=request.GET['id']
+	id = request.GET.get('id')
+	if not id:
+		return HttpResponse("<script>alert('Invalid Request: Patient Request ID is required.');window.location='/viewdietplanreqdietician/';</script>")
 	return render(request,'dietmaster.html',{'id':id})
 
 def dietmasteraction(request):
@@ -720,10 +713,11 @@ def chatact(request):
 
 def dchat(request):
 	cursor=connection.cursor()
-	uid=request.GET['id']
-	s="select * from chatm inner join chats on chats.chat_id=chatm.chid where  uid=%s order by ctid asc "%(uid)
-
-	cursor.execute(s)
+	uid = request.GET.get('id')
+	if not uid:
+		return HttpResponse("<script>alert('Invalid Request: User ID is required.');window.location='/dieticianhome/';</script>")
+	s="select * from chatm inner join chats on chats.chat_id=chatm.chid where uid=%s order by ctid asc"
+	cursor.execute(s, [uid])
 	rs=cursor.fetchall()
 	clist1=[]
 	for row in rs:
@@ -1440,6 +1434,7 @@ def paymentaction(request):
                 """
                 cursor.execute(sql_update_user_details, [user_id])
                 print(f"User {user_id} status updated in 'user_details' table")
+                request.session['status'] = 'paid'
 
         # Return a response (you can redirect to another page, show a success message, etc.)
         msg = "<script>alert('Successfully paid');window.location='/userhome/';</script>"
@@ -2118,7 +2113,7 @@ def send_otp(request):
                 send_mail(
                     subject="Your OTP for Password Reset - HealthyMe",
                     message=f"Your OTP is: {otp}. Please enter this code to reset your password. This OTP is valid for 10 minutes.",
-                    from_email=settings.EMAIL_HOST_USER,
+                    from_email=FROM_EMAIL,
                     recipient_list=[email],
                     fail_silently=False,
                 )
@@ -2211,7 +2206,7 @@ def send_login_otp(request):
                 send_mail(
                     subject="Your Login OTP - HealthyMe",
                     message=f"Your login OTP is: {otp}. Please enter this code to login. This OTP is valid for 10 minutes.",
-                    from_email=settings.EMAIL_HOST_USER,
+                    from_email=FROM_EMAIL,
                     recipient_list=[email],
                     fail_silently=False,
                 )
@@ -2255,15 +2250,15 @@ def verify_login_otp(request):
                 
                 # Redirect based on user type
                 if request.session['UTYPE'] == 'admin':
-                    return render(request, 'admin_home.html')
+                    return redirect('/adminhome/')
                 elif request.session['UTYPE'] == 'user':
                     if request.session.get('status') == 'paid':
-                        return render(request, 'user_home.html')
+                        return redirect('/userhome/')
                     else:
                         msg = "<script>alert('Payment is pending'); window.location='/home/';</script>"
                         return HttpResponse(msg)
                 elif request.session['UTYPE'] == 'dietician':
-                    return dieticianhome(request)
+                    return redirect('/dieticianhome/')
             else:
                 return render(request, "verify_login_otp.html", 
                              {"email": email, "error": "User account not found."})
@@ -2296,8 +2291,8 @@ def verify_registration_otp(request):
                     with connection.cursor() as cursor:
                         # Insert into registration table
                         sql = """INSERT INTO REGISTRATION 
-                                (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB) 
-                                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                                (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
                         cursor.execute(sql, [
                             registration_data['fname'],
                             registration_data['lname'],
@@ -2315,7 +2310,7 @@ def verify_registration_otp(request):
                         # Insert into login table
                         # D4 FIX: Hash password during registration completed flow
                         from django.contrib.auth.hashers import make_password
-                        sql2 = "INSERT INTO login (UID, UNAME, upass, UTYPE) VALUES (%s, %s, %s, 'user')"
+                        sql2 = "INSERT INTO login (UID, UNAME, upass, UTYPE, status) VALUES (%s, %s, %s, 'user', '')"
                         cursor.execute(sql2, [user_id, registration_data['email'], make_password(registration_data['password'])])
                         
                         # Clean up temporary data
@@ -2324,8 +2319,11 @@ def verify_registration_otp(request):
                         return render(request, "login.html", {"success": "Registration completed successfully! Please login with your email and password."})
                         
                 except Exception as e:
+                    logger.error(f"Error completing registration: {str(e)}")
+                    import traceback
+                    logger.error(traceback.format_exc())
                     return render(request, "verify_registration_otp.html", 
-                                 {"email": email, "error": "Failed to complete registration. Please try again."})
+                                 {"email": email, "error": f"Failed to complete registration: {str(e)}. Please try again."})
             else:
                 return render(request, "verify_registration_otp.html", 
                              {"email": email, "error": "Registration data not found. Please register again."})
@@ -2349,12 +2347,13 @@ def test_email_config(request):
         logger.debug(f"DEBUG: EMAIL_HOST = {settings.EMAIL_HOST}")
         logger.debug(f"DEBUG: EMAIL_PORT = {settings.EMAIL_PORT}")
         logger.debug(f"DEBUG: EMAIL_USE_TLS = {settings.EMAIL_USE_TLS}")
+        logger.debug(f"DEBUG: FROM_EMAIL = {FROM_EMAIL}")
         
         send_mail(
             subject="Test Email - HealthyMe",
             message="This is a test email to verify email configuration is working.",
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[settings.EMAIL_HOST_USER],  # Send to yourself
+            from_email=FROM_EMAIL,
+            recipient_list=[FROM_EMAIL],  # Send to yourself
             fail_silently=False,
         )
         return HttpResponse("Test email sent successfully! Check your inbox.")
@@ -2565,17 +2564,17 @@ def google_login_callback(request):
             
             # Use the same pattern as searchlogin function - let Django handle sessions automatically
             if request.session['UTYPE'] == 'admin':
-                return render(request, 'admin_home.html')
+                return redirect('/adminhome/')
             elif request.session['UTYPE'] == 'user':
                 if request.session.get('status') == 'paid':
-                    return render(request, 'user_home.html')
+                    return redirect('/userhome/')
                 else:
                     msg = "<script>alert('Payment is pending'); window.location='/home/';</script>"
                     return HttpResponse(msg)
             elif request.session['UTYPE'] == 'dietician':
-                return dieticianhome(request)
+                return redirect('/dieticianhome/')
             else:
-                return render(request, 'user_home.html')
+                return redirect('/userhome/')
         else:
             # User doesn't exist, redirect to registration page with email pre-filled
             logger.debug(f"DEBUG: User doesn't exist, redirecting to registration")

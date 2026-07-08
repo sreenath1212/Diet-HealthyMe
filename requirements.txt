@@ -14,3 +14,4 @@ grpcio-status
 google-auth-oauthlib
 matplotlib
 seaborn
+django-anymail[resend]
