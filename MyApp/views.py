@@ -41,11 +41,7 @@ logger = logging.getLogger(__name__)
 FROM_EMAIL = getattr(settings, 'DEFAULT_FROM_EMAIL', settings.EMAIL_HOST_USER)
 
 
-# OTP storage for password reset, login, and registration (in production, use Redis or database)
-otp_storage = {}
-login_otp_storage = {}
-registration_otp_storage = {}
-pending_registrations = {}
+# Legacy OTP storage removed
 
 # Create your views here.
 def reg(request):
@@ -1067,15 +1063,34 @@ def userinputh(request):
 	return render(request,'userinputh.html')
 
 def fpass(request):
-	# D3 FIX: Deprecate insecure plaintext forgot-password view
-	return redirect('/forgot_password/')
-
+	return render(request, 'fpass.html')
 
 def fpass1(request):
-	return redirect('/forgot_password/')
+	return render(request, 'fpass1.html')
+	
 def fpassact(request):
-	# D3 FIX: Deprecate insecure plaintext forgot-password action
-	return redirect('/forgot_password/')
+	if request.method == "POST":
+		email = request.POST.get("un")
+		phone = request.POST.get("up")
+		new_pass = request.POST.get("np")
+		cpass = request.POST.get("cp")
+
+		if new_pass != cpass:
+			return render(request, 'fpass.html', {'error': 'Passwords do not match.'})
+
+		with connection.cursor() as cursor:
+			# Verify email and phone match registration table
+			cursor.execute("SELECT RID FROM registration WHERE EMAIL = %s AND PHONE = %s", [email, phone])
+			user = cursor.fetchone()
+
+			if user:
+				from django.contrib.auth.hashers import make_password
+				hashed_pw = make_password(new_pass)
+				cursor.execute("UPDATE login SET upass = %s WHERE uid = %s", [hashed_pw, user[0]])
+				return render(request, 'login.html', {'success': 'Password successfully reset. Please login with your new password.'})
+			else:
+				return render(request, 'fpass.html', {'error': 'Invalid Email or Phone Number.'})
+	return redirect('/fpass/')
 
 from django.shortcuts import render
 from django.db import connection
@@ -2098,258 +2113,23 @@ def update_meal_progress(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-# OTP-based Password Reset Views
-def forgot_password(request):
-    """Display the forgot password form"""
-    return render(request, 'forgot_password.html')
-
-def send_otp(request):
-    """Generate and send OTP to user's email"""
-    if request.method == "POST":
-        email = request.POST.get("email")
-        
-        # Check if email exists in database
-        with connection.cursor() as cursor:
-            # FIX: Column is EMAIL (uppercase) in registration table on Linux MySQL
-            cursor.execute("SELECT EMAIL FROM registration WHERE EMAIL = %s", [email])
-            user = cursor.fetchone()
-        
-        if user:  # If user exists
-            otp = random.randint(100000, 999999)  # Generate 6-digit OTP
-            # D1 FIX: Store OTP with creation timestamp
-            otp_storage[email] = {'otp': otp, 'created_at': time.time()}
-            
-            # Send OTP via email
-            try:
-                send_mail(
-                    subject="Your OTP for Password Reset - HealthyMe",
-                    message=f"Your OTP is: {otp}. Please enter this code to reset your password. This OTP is valid for 10 minutes.",
-                    from_email=FROM_EMAIL,
-                    recipient_list=[email],
-                    fail_silently=False,
-                )
-                return render(request, "otp_verification.html", {"email": email, "success": "OTP sent successfully!"})
-            except Exception as e:
-                # DEMO MODE FALLBACK: If SMTP is blocked, show code on screen
-                return render(request, "otp_verification.html", {
-                    "email": email, 
-                    "success": f"Reset code generated (Email SMTP block fallback). Your demo OTP is: {otp}"
-                })
-        else:
-            return render(request, "forgot_password.html", {"error": "Email not found in our records."})
-    
-    return render(request, "forgot_password.html")
-
-def verify_otp(request):
-    """Verify the OTP entered by user"""
-    if request.method == "POST":
-        email = request.POST.get("email")
-        entered_otp = request.POST.get("otp")
-        
-        stored = otp_storage.get(email)
-        OTP_EXPIRY_SECONDS = 600  # 10 minutes
-        if stored and str(stored['otp']) == entered_otp and (time.time() - stored['created_at']) <= OTP_EXPIRY_SECONDS:
-            del otp_storage[email]  # Remove OTP after verification
-            return render(request, "reset_password.html", {"email": email})
-        elif stored and (time.time() - stored['created_at']) > OTP_EXPIRY_SECONDS:
-            del otp_storage[email]
-            return render(request, "forgot_password.html", {"error": "OTP has expired. Please request a new one."})
-        else:
-            return render(request, "otp_verification.html", 
-                         {"email": email, "error": "Incorrect OTP. Please try again."})
-    
-    return render(request, "otp_verification.html")
-
-def reset_password(request):
-    """Reset user's password after OTP verification"""
+def fpass(request):
+    """Direct password reset view"""
     if request.method == "POST":
         email = request.POST.get("email")
         new_password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
         
-        # Validate password
-        if len(new_password) < 8:
-            return render(request, "reset_password.html", 
-                         {"email": email, "error": "Password must be at least 8 characters long."})
-        
-        if new_password != confirm_password:
-            return render(request, "reset_password.html", 
-                         {"email": email, "error": "Passwords do not match."})
-        
-        # D2 FIX: Store the newly reset password securely as a hash
         from django.contrib.auth.hashers import make_password
         try:
             with connection.cursor() as cursor:
-                # FIX: Column name is EMAIL (uppercase) in registration table on Linux MySQL
                 cursor.execute(
-                    "UPDATE login SET upass = %s WHERE uid = (SELECT RID FROM registration WHERE EMAIL = %s)",
+                    "UPDATE login SET upass = %s WHERE uname = %s",
                     [make_password(new_password), email]
                 )
-            
-            return render(request, "login.html", {"success": "Password reset successfully! Please login with your new password."})
+            return render(request, "login.html", {"success": "Password reset successfully!"})
         except Exception as e:
-            return render(request, "reset_password.html", 
-                         {"email": email, "error": "Failed to reset password. Please try again."})
-    
-    return render(request, "reset_password.html")
-
-# OTP-Based Login Views
-def login_with_otp(request):
-    """Display the OTP-based login form"""
-    return render(request, 'login_with_otp.html')
-
-def send_login_otp(request):
-    """Generate and send OTP for login"""
-    if request.method == "POST":
-        email = request.POST.get("email")
-        
-        # Check if email exists in database
-        with connection.cursor() as cursor:
-            # FIX: Column is EMAIL (uppercase) in registration table on Linux MySQL
-            cursor.execute("SELECT EMAIL FROM registration WHERE EMAIL = %s", [email])
-            user = cursor.fetchone()
-        
-        if user:  # If user exists
-            otp = random.randint(100000, 999999)  # Generate 6-digit OTP
-            # D1 FIX: Store login OTP with creation timestamp
-            login_otp_storage[email] = {'otp': otp, 'created_at': time.time()}
-            
-            # Send OTP via email
-            try:
-                send_mail(
-                    subject="Your Login OTP - HealthyMe",
-                    message=f"Your login OTP is: {otp}. Please enter this code to login. This OTP is valid for 10 minutes.",
-                    from_email=FROM_EMAIL,
-                    recipient_list=[email],
-                    fail_silently=False,
-                )
-                return render(request, "verify_login_otp.html", {"email": email, "success": "Login OTP sent successfully!"})
-            except Exception as e:
-                # DEMO MODE FALLBACK: If SMTP is blocked, show code on screen
-                return render(request, "verify_login_otp.html", {
-                    "email": email, 
-                    "success": f"Login code generated (Email SMTP block fallback). Your demo OTP is: {otp}"
-                })
-        else:
-            return render(request, "login_with_otp.html", {"error": "Email not found in our records."})
-    
-    return render(request, "login_with_otp.html")
-
-def verify_login_otp(request):
-    """Verify the OTP and login user"""
-    if request.method == "POST":
-        email = request.POST.get("email")
-        entered_otp = request.POST.get("otp")
-        
-        stored = login_otp_storage.get(email)
-        OTP_EXPIRY_SECONDS = 600  # 10 minutes
-        if stored and str(stored['otp']) == entered_otp and (time.time() - stored['created_at']) <= OTP_EXPIRY_SECONDS:
-            # OTP is correct, proceed with login
-            del login_otp_storage[email]  # Remove OTP after verification
-            
-            # Get user details from database
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM login WHERE uname = %s", [email])
-                result = cursor.fetchall()
-            
-            if result:
-                # Set session variables
-                for row in result:
-                    request.session['UID'] = row[0]
-                    request.session['UNAME'] = row[1]
-                    # A6 FIX: UPASSWORD must never be stored in session — removed
-                    request.session['UTYPE'] = row[3]
-                    request.session['status'] = row[4] if len(row) > 4 else None
-                
-                # Redirect based on user type
-                if request.session['UTYPE'] == 'admin':
-                    return redirect('/adminhome/')
-                elif request.session['UTYPE'] == 'user':
-                    if request.session.get('status') == 'paid':
-                        return redirect('/userhome/')
-                    else:
-                        msg = "<script>alert('Payment is pending'); window.location='/home/';</script>"
-                        return HttpResponse(msg)
-                elif request.session['UTYPE'] == 'dietician':
-                    return redirect('/dieticianhome/')
-            else:
-                return render(request, "verify_login_otp.html", 
-                             {"email": email, "error": "User account not found."})
-        elif stored and (time.time() - stored['created_at']) > OTP_EXPIRY_SECONDS:
-            del login_otp_storage[email]
-            return render(request, "login_with_otp.html", {"error": "OTP has expired. Please request a new one."})
-        else:
-            return render(request, "verify_login_otp.html", 
-                         {"email": email, "error": "Incorrect OTP. Please try again."})
-    
-    return render(request, "verify_login_otp.html")
-
-def verify_registration_otp(request):
-    """Verify the OTP and complete registration"""
-    if request.method == "POST":
-        email = request.POST.get("email")
-        entered_otp = request.POST.get("otp")
-        
-        stored = registration_otp_storage.get(email)
-        OTP_EXPIRY_SECONDS = 600  # 10 minutes
-        if stored and str(stored['otp']) == entered_otp and (time.time() - stored['created_at']) <= OTP_EXPIRY_SECONDS:
-            # OTP is correct, complete registration
-            del registration_otp_storage[email]  # Remove OTP after verification
-            
-            # Get stored registration data
-            if email in pending_registrations:
-                registration_data = pending_registrations[email]
-                
-                try:
-                    with connection.cursor() as cursor:
-                        # Insert into registration table
-                        sql = """INSERT INTO registration 
-                                (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
-                                VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
-                        cursor.execute(sql, [
-                            registration_data['fname'],
-                            registration_data['lname'],
-                            registration_data['address'],
-                            registration_data['phone'],
-                            registration_data['email'],
-                            registration_data['gender'],
-                            registration_data['dob']
-                        ])
-                        
-                        # B9 FIX: was SELECT max(RID) which is a race condition
-                        cursor.execute("SELECT LAST_INSERT_ID()")
-                        user_id = cursor.fetchone()[0]
-                        
-                        # Insert into login table
-                        # D4 FIX: Hash password during registration completed flow
-                        from django.contrib.auth.hashers import make_password
-                        sql2 = "INSERT INTO login (UID, UNAME, upass, UTYPE, status) VALUES (%s, %s, %s, 'user', '')"
-                        cursor.execute(sql2, [user_id, registration_data['email'], make_password(registration_data['password'])])
-                        
-                        # Clean up temporary data
-                        del pending_registrations[email]
-                        
-                        return render(request, "login.html", {"success": "Registration completed successfully! Please login with your email and password."})
-                        
-                except Exception as e:
-                    logger.error(f"Error completing registration: {str(e)}")
-                    import traceback
-                    logger.error(traceback.format_exc())
-                    return render(request, "verify_registration_otp.html", 
-                                 {"email": email, "error": f"Failed to complete registration: {str(e)}. Please try again."})
-            else:
-                return render(request, "verify_registration_otp.html", 
-                             {"email": email, "error": "Registration data not found. Please register again."})
-        elif stored and (time.time() - stored['created_at']) > OTP_EXPIRY_SECONDS:
-            del registration_otp_storage[email]
-            if email in pending_registrations:
-                del pending_registrations[email]
-            return render(request, "registration.html", {"error": "OTP has expired. Please register again."})
-        else:
-            return render(request, "verify_registration_otp.html", 
-                         {"email": email, "error": "Incorrect OTP. Please try again."})
-    
-    return render(request, "verify_registration_otp.html")
+            return render(request, "fpass.html", {"error": "Failed to reset password."})
+    return render(request, "fpass.html")
 
 def test_email_config(request):
     """Test email configuration - for debugging only"""

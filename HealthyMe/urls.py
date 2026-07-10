@@ -76,19 +76,6 @@ urlpatterns = [
     path('fpass/',fpass,name='fpass'),
     path('fpass1/',fpass1,name='fpass1'),
     path('fpassact/',fpassact,name='fpassact'),
-    # OTP-based password reset URLs
-    path('forgot_password/', forgot_password, name='forgot_password'),
-    path('send_otp/', send_otp, name='send_otp'),
-    path('verify_otp/', verify_otp, name='verify_otp'),
-    path('reset_password/', reset_password, name='reset_password'),
-    # OTP-based login URLs
-    path('login_with_otp/', login_with_otp, name='login_with_otp'),
-    path('send_login_otp/', send_login_otp, name='send_login_otp'),
-    path('verify_login_otp/', verify_login_otp, name='verify_login_otp'),
-    # Registration verification URL
-    path('verify_registration_otp/', verify_registration_otp, name='verify_registration_otp'),
-    # Test email URL (for debugging)
-    path('test_email_config/', test_email_config, name='test_email_config'),
     # Test Google OAuth URL (for debugging)
     path('test_google_oauth_config/', test_google_oauth_config, name='test_google_oauth_config'),
     # Google OAuth URLs

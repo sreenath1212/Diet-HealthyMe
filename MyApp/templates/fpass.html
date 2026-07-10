@@ -40,18 +40,29 @@
         </style>
     </head>
     <body>
-        <form action="/fpassact/">
+        <form action="/fpassact/" method="POST">
+            {% csrf_token %}
             <table class="table">
+                {% if error %}
+                <tr>
+                    <td style="color: red; font-weight: bold; text-align: center; padding-bottom: 10px;">{{ error }}</td>
+                </tr>
+                {% endif %}
                 <tr>
                     <td><input type="email" placeholder=" Email ID" name="un" required></td>
                 </tr>
                 <tr>
-                    <td><input type="text" placeholder=" Phone" name="up" required></td>
+                    <td><input type="text" placeholder=" Phone Number" name="up" required></td>
                 </tr>
                 <tr>
-                    <td><input type="submit" value="Submit" name="submit"></td>
+                    <td><input type="password" placeholder=" New Password" name="np" required></td>
                 </tr>
-              
+                <tr>
+                    <td><input type="password" placeholder=" Confirm New Password" name="cp" required></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Reset Password" name="submit"></td>
+                </tr>
             </table>
         </form>
     </body>
