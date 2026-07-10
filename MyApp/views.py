@@ -68,7 +68,8 @@ def regaction(request):
         
         # Check if email already exists
         with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM registration WHERE email = %s", [c])
+            # FIX: Column is EMAIL (uppercase) in registration table on Linux MySQL
+            cursor.execute("SELECT EMAIL FROM registration WHERE EMAIL = %s", [c])
             existing_user = cursor.fetchone()
         
         if existing_user:
@@ -83,7 +84,7 @@ def regaction(request):
             try:
                 with connection.cursor() as cursor:
                     # Insert into registration table
-                    sql = """INSERT INTO REGISTRATION 
+                    sql = """INSERT INTO registration 
                             (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
                             VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
                     
@@ -124,7 +125,7 @@ def regaction(request):
             try:
                 with connection.cursor() as cursor:
                     # Insert into registration table
-                    sql = """INSERT INTO REGISTRATION 
+                    sql = """INSERT INTO registration 
                             (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
                             VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
                     cursor.execute(sql, [a, b, e, h, c, j, d])
@@ -662,9 +663,10 @@ def uchat(request):
 	
 	cursor=connection.cursor()
 	uid=request.session['UID']
-	s="select * from chatm inner join chats on chats.chat_id=chatm.chid where  uid=%s order by ctid asc "%(request.session['UID'])
+	# FIX: was raw string formatting — SQL injection vulnerability; now uses parameterized query
+	s="SELECT * FROM chatm INNER JOIN chats ON chats.chat_id=chatm.chid WHERE uid=%s ORDER BY ctid ASC"
 	
-	cursor.execute(s)
+	cursor.execute(s, [uid])
 	rs=cursor.fetchall()
 	clist1=[]
 	for row in rs:
@@ -771,12 +773,16 @@ def dchatact(request):
 	return render(request, 'dchat.html', {'clist': clist1, 'uid': uidd})
 
 def calorieaction(request):
+	# C1 FIX: Admin-only action
+	if request.session.get('UTYPE') != 'admin':
+		return HttpResponse("<script>alert('Admin access required');window.location='/login/';</script>")
 	cursor=connection.cursor()
 	a=request.GET['fname']
 	b=request.GET['amount']
 	c=request.GET['calories']
-	sql="insert into calories (fname,amount,calories) values ('%s','%s','%s')"%(a,b,c)
-	cursor.execute(sql)
+	# FIX: was raw string formatting — SQL injection vulnerability
+	sql="INSERT INTO calories (fname,amount,calories) VALUES (%s,%s,%s)"
+	cursor.execute(sql, [a, b, c])
 	h="<script>alert('Item Added Successfully');window.location='/calorie/';</script>"
 	return HttpResponse(h)
 
@@ -948,18 +954,22 @@ def userhome(request):
         return HttpResponse(html)
     
     # Fetch all YouTube videos from the database
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT url FROM youtube_videos ORDER BY id DESC")
-        rows = cursor.fetchall()
-        video_ids = []
-        for row in rows:
-            url = row[0]
-            match = re.search(r"(?:v=|youtu\.be/|shorts/)([\w-]+)", url)
-            if match:
-                video_id = match.group(1).split('?')[0]
-                video_ids.append(video_id)
-        if not video_ids:
-            video_ids = ["5zOHSysMmH0"]  # fallback default
+    # FIX: Wrapped in try/except — youtube_videos table may not exist on all deployments
+    video_ids = []
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT url FROM youtube_videos ORDER BY id DESC")
+            rows = cursor.fetchall()
+            for row in rows:
+                url = row[0]
+                match = re.search(r"(?:v=|youtu\.be/|shorts/)([\w-]+)", url)
+                if match:
+                    video_id = match.group(1).split('?')[0]
+                    video_ids.append(video_id)
+    except Exception:
+        pass  # Table may not exist; fall through to default
+    if not video_ids:
+        video_ids = ["5zOHSysMmH0"]  # fallback default
     print("video_ids being sent to template:", video_ids)
     youtube_api_key = os.getenv("YOUTUBE_API_KEY", "")
     return render(request, 'user_home.html', {
@@ -1058,14 +1068,14 @@ def userinputh(request):
 
 def fpass(request):
 	# D3 FIX: Deprecate insecure plaintext forgot-password view
-	return redirect('/forgot-password/')
+	return redirect('/forgot_password/')
 
 
 def fpass1(request):
-	return redirect('/forgot-password/')
+	return redirect('/forgot_password/')
 def fpassact(request):
 	# D3 FIX: Deprecate insecure plaintext forgot-password action
-	return redirect('/forgot-password/')
+	return redirect('/forgot_password/')
 
 from django.shortcuts import render
 from django.db import connection
@@ -2100,7 +2110,8 @@ def send_otp(request):
         
         # Check if email exists in database
         with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM registration WHERE email = %s", [email])
+            # FIX: Column is EMAIL (uppercase) in registration table on Linux MySQL
+            cursor.execute("SELECT EMAIL FROM registration WHERE EMAIL = %s", [email])
             user = cursor.fetchone()
         
         if user:  # If user exists
@@ -2169,8 +2180,9 @@ def reset_password(request):
         from django.contrib.auth.hashers import make_password
         try:
             with connection.cursor() as cursor:
+                # FIX: Column name is EMAIL (uppercase) in registration table on Linux MySQL
                 cursor.execute(
-                    "UPDATE login SET upass = %s WHERE uid = (SELECT RID FROM registration WHERE email = %s)",
+                    "UPDATE login SET upass = %s WHERE uid = (SELECT RID FROM registration WHERE EMAIL = %s)",
                     [make_password(new_password), email]
                 )
             
@@ -2193,7 +2205,8 @@ def send_login_otp(request):
         
         # Check if email exists in database
         with connection.cursor() as cursor:
-            cursor.execute("SELECT email FROM registration WHERE email = %s", [email])
+            # FIX: Column is EMAIL (uppercase) in registration table on Linux MySQL
+            cursor.execute("SELECT EMAIL FROM registration WHERE EMAIL = %s", [email])
             user = cursor.fetchone()
         
         if user:  # If user exists
@@ -2290,7 +2303,7 @@ def verify_registration_otp(request):
                 try:
                     with connection.cursor() as cursor:
                         # Insert into registration table
-                        sql = """INSERT INTO REGISTRATION 
+                        sql = """INSERT INTO registration 
                                 (FIRST_NAME, LAST_NAME, ADDRESS, PHONE, EMAIL, GENDER, DOB, status) 
                                 VALUES (%s, %s, %s, %s, %s, %s, %s, '')"""
                         cursor.execute(sql, [

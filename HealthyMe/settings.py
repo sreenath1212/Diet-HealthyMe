@@ -27,9 +27,9 @@ TEMPLATE_DIRS = ( os.path.join(os.path.dirname(__file__), 'templates'),
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'v(#l_hc#=8==l)(trkhm+by#s_8+!mzaynepp#p1(s@9qybt9n')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '.onrender.com,localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -132,7 +132,8 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "onboarding@resend.dev")
 # Google OAuth Configuration
 GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID', '')
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET', '')
-GOOGLE_OAUTH_REDIRECT_URI = 'http://localhost:8000/google-login-callback/'
+# FIX: Redirect URI should be env-driven so it works in both local and production
+GOOGLE_OAUTH_REDIRECT_URI = os.getenv('GOOGLE_OAUTH_REDIRECT_URI', 'http://localhost:8000/google-login-callback/')
 
 # Session Configuration
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
